@@ -9,4 +9,20 @@ class ScheduleSeat extends Model
 {
     /** @use HasFactory<\Database\Factories\ScheduleSeatFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'schedule_id',
+        'seat_id',
+        'is_booked',
+    ];
+
+    public function schedule()
+    {
+        return $this->belongsTo(Schedule::class);
+    }
+
+    public function seat()
+    {
+        return $this->belongsTo(Seat::class);
+    }
 }

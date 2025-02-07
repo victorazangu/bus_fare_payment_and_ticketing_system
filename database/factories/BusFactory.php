@@ -16,8 +16,16 @@ class BusFactory extends Factory
      */
     public function definition(): array
     {
+        $capacity = fake()->numberBetween(20, 50);
         return [
-            //
+            'registration_number' => fake()->unique()->regexify('[A-Z]{3}[0-9]{3}'),
+            'capacity' => $capacity,
+            'model' => fake()->randomElement(['Volvo', 'Mercedes-Benz', 'Scania', 'MAN']),
+            'year' => fake()->numberBetween(2010, 2023),
+            'latitude' => fake()->latitude(),
+            'longitude' => fake()->longitude(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }

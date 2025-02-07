@@ -9,4 +9,17 @@ class Cancellation extends Model
 {
     /** @use HasFactory<\Database\Factories\CancellationFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'booking_id',
+        'cancellation_date',
+        'refund_amount',
+        'reason',
+        'status', // e.g., 'requested', 'approved', 'rejected', 'refunded'
+    ];
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class);
+    }
 }

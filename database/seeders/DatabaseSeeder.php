@@ -13,11 +13,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            UserSeeder::class,
+            BusSeeder::class,
+            RouteSeeder::class,
+            ScheduleSeeder::class,
+            SeatSeeder::class,
+            ScheduleSeatSeeder::class,
+            BookingSeeder::class,
+            PaymentTransactionSeeder::class,
+            BusDriverSeeder::class,
+            CancellationSeeder::class,
+            NotificationSeeder::class,
         ]);
     }
 }

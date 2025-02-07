@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\BusDriver;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class BusDriverSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        BusDriver::factory(10)->create();
     }
 }

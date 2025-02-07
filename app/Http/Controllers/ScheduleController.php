@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreScheduleRequest;
 use App\Http\Requests\UpdateScheduleRequest;
 use App\Models\Schedule;
+use Inertia\Inertia;
 
 class ScheduleController extends Controller
 {
@@ -13,7 +14,7 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Schedule/Index');
     }
 
     /**

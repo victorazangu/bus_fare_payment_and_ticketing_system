@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Models\Booking;
+use Inertia\Inertia;
 
 class BookingController extends Controller
 {
@@ -13,7 +14,7 @@ class BookingController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Booking/Index');
     }
 
     /**

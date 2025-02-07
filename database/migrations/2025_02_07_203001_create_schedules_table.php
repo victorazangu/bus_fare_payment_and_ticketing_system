@@ -16,7 +16,10 @@ return new class extends Migration
             $table->foreignId('bus_id')->constrained();
             $table->foreignId('route_id')->constrained();
             $table->time('departure_time');
+            $table->time('arrival_time');
             $table->decimal('fare', 8, 2);
+            $table->integer('available_seats');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

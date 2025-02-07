@@ -19,6 +19,8 @@ return new class extends Migration
             $table->date('booking_date');
             $table->string('qr_code')->nullable();
             $table->string('payment_status')->default('pending');
+            $table->decimal("total_fare");
+            $table->softDeletes();
             $table->timestamps();
         });
     }

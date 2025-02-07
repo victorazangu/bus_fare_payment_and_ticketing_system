@@ -1,39 +1,132 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
-
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+
+    const isAdmin = user?.user_type === 'admin';
+    const isPassenger = user?.user_type === 'passenger';
+    const isDriver = user?.user_type === 'driver'; // Assuming you have a 'driver' user type
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
             <nav className="border-b border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         <div className="flex">
-                            <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
-                                </Link>
-                            </div>
+                            {/* Admin Navigation */}
+                            {isAdmin && (
+                                <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                    <NavLink
+                                        href={route('dashboard')}
+                                        active={route().current('dashboard')}
+                                    >
+                                        Dashboard
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('routes.index')}
+                                        active={route().current('routes.*')}
+                                    >
+                                        Routes
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('schedules.index')}
+                                        active={route().current('schedules.*')}
+                                    >
+                                        Schedules
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('buses.index')}
+                                        active={route().current('buses.*')}
+                                    >
+                                        Buses
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('users.index')}
+                                        active={route().current('users.*')}
+                                    >
+                                        Users
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('bookings.index')}
+                                        active={route().current('bookings.*')}
+                                    >
+                                        Bookings
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('payments.index')}
+                                        active={route().current('payments.*')}
+                                    >
+                                        Payments
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('cancellations.index')}
+                                        active={route().current(
+                                            'cancellations.*',
+                                        )}
+                                    >
+                                        Cancellations
+                                    </NavLink>
+                                </div>
+                            )}
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Dashboard
-                                </NavLink>
-                            </div>
+                            {/* Passenger Navigation */}
+                            {isPassenger && (
+                                <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                    <NavLink
+                                        href={route('home')}
+                                        active={route().current('home')}
+                                    >
+                                        Home
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('bookings.index')}
+                                        active={route().current(
+                                            'bookings.index',
+                                        )}
+                                    >
+                                        My Bookings
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('profile.edit')}
+                                        active={route().current('profile.edit')}
+                                    >
+                                        Profile
+                                    </NavLink>
+                                </div>
+                            )}
+
+                            {/* Driver Navigation */}
+                            {isDriver && (
+                                <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                    <NavLink
+                                        href={route('driver.dashboard')}
+                                        active={route().current(
+                                            'driver.dashboard',
+                                        )}
+                                    >
+                                        Dashboard
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('driver.schedule')}
+                                        active={route().current(
+                                            'driver.schedule',
+                                        )}
+                                    >
+                                        My Schedule
+                                    </NavLink>
+                                </div>
+                            )}
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
+                            {/*to add notification here*/}
+                            <h1 className="text-white">Bell</h1>
                             <div className="relative ms-3">
                                 <Dropdown>
                                     <Dropdown.Trigger>
@@ -134,6 +227,12 @@ export default function AuthenticatedLayout({ header, children }) {
                         >
                             Dashboard
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('dashboard')}
+                            active={route().current('dashboard')}
+                        >
+                            Dashboard 2
+                        </ResponsiveNavLink>
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">
@@ -161,15 +260,6 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
             </nav>
-
-            {header && (
-                <header className="bg-white shadow dark:bg-gray-800">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
-                </header>
-            )}
-
             <main>{children}</main>
         </div>
     );

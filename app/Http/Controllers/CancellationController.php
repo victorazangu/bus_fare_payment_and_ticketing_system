@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCancellationRequest;
 use App\Http\Requests\UpdateCancellationRequest;
 use App\Models\Cancellation;
+use Inertia\Inertia;
 
 class CancellationController extends Controller
 {
@@ -13,7 +14,7 @@ class CancellationController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Cancellation/Index', []);
     }
 
     /**

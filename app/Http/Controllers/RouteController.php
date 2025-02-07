@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreRouteRequest;
 use App\Http\Requests\UpdateRouteRequest;
 use App\Models\Route;
+use Inertia\Inertia;
 
 class RouteController extends Controller
 {
@@ -13,7 +14,7 @@ class RouteController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Route/Index');
     }
 
     /**

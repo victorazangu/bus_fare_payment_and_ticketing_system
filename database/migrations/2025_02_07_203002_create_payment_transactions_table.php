@@ -18,6 +18,8 @@ return new class extends Migration
             $table->decimal('amount', 8, 2);
             $table->string('payment_method');
             $table->string('status');
+            $table->date('payment_date');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

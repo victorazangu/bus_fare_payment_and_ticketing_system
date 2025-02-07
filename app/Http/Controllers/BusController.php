@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBusRequest;
 use App\Http\Requests\UpdateBusRequest;
 use App\Models\Bus;
+use Inertia\Inertia;
 
 class BusController extends Controller
 {
@@ -13,7 +14,7 @@ class BusController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Bus/Index');
     }
 
     /**

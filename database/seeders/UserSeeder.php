@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Route;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class RouteSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Route::factory(10)->create();
+        User::factory(2)->create();
     }
 }

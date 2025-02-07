@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('cancellations', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('booking_id')->constrained();
+            $table->timestamp('cancellation_date');
+            $table->decimal('refund_amount', 8, 2)->default(0);
+            $table->string('reason')->nullable();
+            $table->string('status')->default('requested');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

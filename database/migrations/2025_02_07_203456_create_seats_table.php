@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('bus_id')->constrained();
             $table->string('seat_number');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->foreignId('schedule_id')->nullable()->constrained();
             $table->date('assignment_date');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

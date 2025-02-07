@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('schedule_id')->constrained();
             $table->foreignId('seat_id')->constrained();
             $table->boolean('is_booked')->default(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePaymentTransactionRequest;
 use App\Http\Requests\UpdatePaymentTransactionRequest;
 use App\Models\PaymentTransaction;
+use Inertia\Inertia;
 
 class PaymentTransactionController extends Controller
 {
@@ -13,7 +14,7 @@ class PaymentTransactionController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('PaymentTransaction/Index');
     }
 
     /**

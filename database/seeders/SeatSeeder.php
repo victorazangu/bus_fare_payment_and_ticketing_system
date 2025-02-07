@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Seat;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,6 @@ class SeatSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Seat::factory(10)->create();
     }
 }

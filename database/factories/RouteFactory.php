@@ -16,8 +16,19 @@ class RouteFactory extends Factory
      */
     public function definition(): array
     {
+        $origin = fake()->city();
+        $destination = fake()->city();
+        while ($destination === $origin) {
+            $destination = fake()->city();
+        }
+        $distance = fake()->numberBetween(50, 500);
         return [
-            //
+            'origin' => $origin,
+            'destination' => $destination,
+            'distance' => $distance,
+            'estimated_travel_time' => fake()->numberBetween(1, 8),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }
