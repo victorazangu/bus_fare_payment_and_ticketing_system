@@ -1,17 +1,51 @@
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
+import NotificationModal from '@/Components/NotificationModal.jsx';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import { BellIcon } from '@heroicons/react/24/outline';
 import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
     const isAdmin = user?.user_type === 'admin';
     const isPassenger = user?.user_type === 'passenger';
-    const isDriver = user?.user_type === 'driver'; // Assuming you have a 'driver' user type
+    const isDriver = user?.user_type === 'driver';
+    const [notifications, setNotifications] = useState([
+        {
+            id: 1,
+            message: 'New booking received for Route A',
+            sent_at: '2024-10-27 10:00',
+        },
+        {
+            id: 2,
+            message: 'Bus 123 is delayed by 30 minutes',
+            sent_at: '2024-10-27 09:30',
+        },
+        {
+            id: 3,
+            message: 'Promotion code SUMMER20 is expiring soon',
+            sent_at: '2024-10-26 18:00',
+        },
+        {
+            id: 4,
+            message: 'A user cancelled booking #456',
+            sent_at: '2024-10-26 12:00',
+        },
+        // {
+        //     id: 5,
+        //     message: 'Maintenance scheduled for Bus 789',
+        //     sent_at: '2024-10-25 20:00',
+        // },
+    ]);
+
+    const toggleModal = () => {
+        setIsModalOpen(!isModalOpen);
+    };
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -126,7 +160,14 @@ export default function AuthenticatedLayout({ header, children }) {
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
                             {/*to add notification here*/}
-                            <h1 className="text-white">Bell</h1>
+                            <button onClick={toggleModal} className="relative">
+                                <BellIcon className="h-9 w-9 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" />
+                                {notifications.length > 0 && (
+                                    <span className="absolute right-0 top-1 inline-flex items-center justify-center rounded-full bg-red-600 px-2 py-1 text-xs font-bold leading-none text-red-100">
+                                        {notifications.length}
+                                    </span>
+                                )}
+                            </button>
                             <div className="relative ms-3">
                                 <Dropdown>
                                     <Dropdown.Trigger>
@@ -261,6 +302,12 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </nav>
             <main>{children}</main>
+            {isModalOpen && (
+                <NotificationModal
+                    notifications={notifications}
+                    onClose={toggleModal}
+                />
+            )}
         </div>
     );
 }
