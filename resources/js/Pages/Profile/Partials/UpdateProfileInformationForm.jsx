@@ -1,7 +1,7 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
+import InputError from '@/Components/InputError.jsx';
+import InputLabel from '@/Components/InputLabel.jsx';
+import PrimaryButton from '@/Components/PrimaryButton.jsx';
+import TextInput from '@/Components/TextInput.jsx';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
 
@@ -15,6 +15,8 @@ export default function UpdateProfileInformation({
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
             name: user.name,
+            phone: user.phone,
+            address: user.address,
             email: user.email,
         });
 
@@ -67,6 +69,36 @@ export default function UpdateProfileInformation({
                     />
 
                     <InputError className="mt-2" message={errors.email} />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="phone" value="Phone" />
+
+                    <TextInput
+                        id="phone"
+                        type="text"
+                        className="mt-1 block w-full"
+                        value={data.phone}
+                        onChange={(e) => setData('phone', e.target.value)}
+                        required
+                        autoComplete="phone"
+                    />
+
+                    <InputError className="mt-2" message={errors.phone} />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="address" value="Address" />
+                    <TextInput
+                        id="address"
+                        type="text"
+                        className="mt-1 block w-full"
+                        value={data.address}
+                        onChange={(e) => setData('address', e.target.value)}
+                        required
+                        autoComplete="address"
+                    />
+                    <InputError className="mt-2" message={errors.address} />
                 </div>
 
                 {mustVerifyEmail && user.email_verified_at === null && (

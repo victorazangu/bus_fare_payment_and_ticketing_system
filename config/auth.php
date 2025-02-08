@@ -44,7 +44,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | User Providers
+    | Passenger Providers
     |--------------------------------------------------------------------------
     |
     | All authentication guards have a user provider, which defines how the

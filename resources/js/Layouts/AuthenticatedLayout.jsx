@@ -42,7 +42,9 @@ export default function AuthenticatedLayout({ header, children }) {
         //     sent_at: '2024-10-25 20:00',
         // },
     ]);
-
+    console.log('isAdmin ', isAdmin);
+    console.log('isPassenger ', isPassenger);
+    console.log('isDriver ', isDriver);
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
     };
@@ -57,51 +59,67 @@ export default function AuthenticatedLayout({ header, children }) {
                             {isAdmin && (
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink
-                                        href={route('dashboard')}
-                                        active={route().current('dashboard')}
+                                        href={route('admin.dashboard')}
+                                        active={route().current(
+                                            'admin.dashboard',
+                                        )}
                                     >
                                         Dashboard
                                     </NavLink>
                                     <NavLink
-                                        href={route('routes.index')}
-                                        active={route().current('routes.*')}
+                                        href={route('admin.routes.index')}
+                                        active={route().current(
+                                            'admin.routes.*',
+                                        )}
                                     >
                                         Routes
                                     </NavLink>
                                     <NavLink
-                                        href={route('schedules.index')}
-                                        active={route().current('schedules.*')}
+                                        href={route('admin.schedules.index')}
+                                        active={route().current(
+                                            'admin.schedules.*',
+                                        )}
                                     >
                                         Schedules
                                     </NavLink>
                                     <NavLink
-                                        href={route('buses.index')}
-                                        active={route().current('buses.*')}
+                                        href={route('admin.buses.index')}
+                                        active={route().current(
+                                            'admin.buses.*',
+                                        )}
                                     >
                                         Buses
                                     </NavLink>
                                     <NavLink
-                                        href={route('users.index')}
-                                        active={route().current('users.*')}
+                                        href={route('admin.users.index')}
+                                        active={route().current(
+                                            'admin.users.*',
+                                        )}
                                     >
                                         Users
                                     </NavLink>
                                     <NavLink
-                                        href={route('bookings.index')}
-                                        active={route().current('bookings.*')}
+                                        href={route('admin.bookings.index')}
+                                        active={route().current(
+                                            'admin.bookings.*',
+                                        )}
                                     >
                                         Bookings
                                     </NavLink>
                                     <NavLink
-                                        href={route('payments.index')}
-                                        active={route().current('payments.*')}
+                                        href={route('admin.payments.index')}
+                                        active={route().current(
+                                            'admin.payments.*',
+                                        )}
                                     >
                                         Payments
                                     </NavLink>
                                     <NavLink
-                                        href={route('cancellations.index')}
+                                        href={route(
+                                            'admin.cancellations.index',
+                                        )}
                                         active={route().current(
-                                            'cancellations.*',
+                                            'admin.cancellations.*',
                                         )}
                                     >
                                         Cancellations
@@ -113,24 +131,54 @@ export default function AuthenticatedLayout({ header, children }) {
                             {isPassenger && (
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink
-                                        href={route('home')}
-                                        active={route().current('home')}
+                                        href={route('passenger.dashboard')}
+                                        active={route().current(
+                                            'passenger.dashboard',
+                                        )}
                                     >
                                         Home
                                     </NavLink>
                                     <NavLink
-                                        href={route('bookings.index')}
+                                        href={route('passenger.bookings.index')}
                                         active={route().current(
-                                            'bookings.index',
+                                            'passenger.bookings.index',
                                         )}
                                     >
                                         My Bookings
                                     </NavLink>
                                     <NavLink
-                                        href={route('profile.edit')}
-                                        active={route().current('profile.edit')}
+                                        href={route('passenger.buses.index')}
+                                        active={route().current(
+                                            'passenger.buses.index',
+                                        )}
                                     >
-                                        Profile
+                                        Buses
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('passenger.routes.index')}
+                                        active={route().current(
+                                            'passenger.routes.index',
+                                        )}
+                                    >
+                                        Routes
+                                    </NavLink>
+                                    <NavLink
+                                        href={route(
+                                            'passenger.notifications.index',
+                                        )}
+                                        active={route().current(
+                                            'passenger.notifications.index',
+                                        )}
+                                    >
+                                        Notification
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('passenger.payments.index')}
+                                        active={route().current(
+                                            'passenger.payments.index',
+                                        )}
+                                    >
+                                        Transaction
                                     </NavLink>
                                 </div>
                             )}
@@ -147,12 +195,28 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Dashboard
                                     </NavLink>
                                     <NavLink
-                                        href={route('driver.schedule')}
+                                        href={route('driver.schedules.index')}
                                         active={route().current(
-                                            'driver.schedule',
+                                            'driver.schedules.*',
                                         )}
                                     >
                                         My Schedule
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('driver.buses.index')}
+                                        active={route().current(
+                                            'driver.buses.*',
+                                        )}
+                                    >
+                                        Bus
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('driver.routes.index')}
+                                        active={route().current(
+                                            'driver.routes.*',
+                                        )}
+                                    >
+                                        Route
                                     </NavLink>
                                 </div>
                             )}
@@ -262,18 +326,18 @@ export default function AuthenticatedLayout({ header, children }) {
                     }
                 >
                     <div className="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
-                        >
-                            Dashboard 2
-                        </ResponsiveNavLink>
+                        {/*<ResponsiveNavLink*/}
+                        {/*    href={route('dashboard')}*/}
+                        {/*    active={route().current('dashboard')}*/}
+                        {/*>*/}
+                        {/*    Dashboard*/}
+                        {/*</ResponsiveNavLink>*/}
+                        {/*<ResponsiveNavLink*/}
+                        {/*    href={route('dashboard')}*/}
+                        {/*    active={route().current('dashboard')}*/}
+                        {/*>*/}
+                        {/*    Dashboard 2*/}
+                        {/*</ResponsiveNavLink>*/}
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">
