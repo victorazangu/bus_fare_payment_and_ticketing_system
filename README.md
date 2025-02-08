@@ -1,66 +1,155 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Bus Fare Payment and Ticketing System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Project Overview
 
-## About Laravel
+This project is a digital platform designed to streamline bus ticket booking, payment processing, and ticket verification using QR codes. The system allows passengers to easily search for routes, book tickets, securely process payments, and manage their bookings. Admins can manage routes, schedules, buses, users, and generate reports.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Core Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+*   **User Registration and Login:** Secure user authentication for passengers and administrators.
+*   **Route and Schedule Search:** Passengers can search for available bus routes based on origin, destination, and date.
+*   **Ticket Booking:** Selection of bus route and schedule, seat selection (if implemented), and fare display.
+*   **Payment Processing:** Integration with payment gateways (Mpesa) for secure online payments.
+*   **QR Code Generation:** Generation of unique QR codes for each ticket upon successful payment.
+*   **Ticket Verification (QR Code Scanning):** Mobile app for bus conductors to scan and verify ticket validity using QR codes.
+*   **Admin Panel:** Comprehensive admin interface for managing:
+    *   Bus routes, schedules, and fares
+    *   Users and their accounts
+    *   Reports on ticket sales, revenue, and bus occupancy
+<!-- *   **Real-time Bus Tracking:** Display bus locations on a map in real-time using Google Maps API. -->
+*   **Notifications:** Notifications for booking confirmation, reminders, and schedule changes.
 
-## Learning Laravel
+### Additional Features (Depending on Implementation)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+<!-- *   **Cancellation and Refund:** Option for passengers to cancel tickets within a specific timeframe and receive refunds. -->
+*   **User Profile Management:** Management of booking history and payment methods.
+*   **Role-Based Access Control (RBAC):** Different levels of access for administrators.
+<!-- *   **Promotions:** Promotion codes to provide a discount amount and/or percentage. -->
+*   **Soft Deletes:** Enables deletion of data without physical data loss.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Technologies Used
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+*   **Backend:**
+    *   **PHP:** Version 8.0+
+    *   **Laravel Framework:** Version 10.0+
+    *   **Database:** MySQL 
+    *   **Payment Gateway:** Mpesa
+    *   **QR Code Generation Library:** Simple-QRcode
+    *   **Google Maps API**
+*   **Frontend:**
+    *   **JavaScript:** ES6+
+    *   **React:** Version 18.0+
+    *   **Inertia.js:** For seamless integration between Laravel backend and React frontend
+    *   **CSS Framework:** Tailwind CSS
+    *   **Icons:** Heroicons
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Installation
 
-### Premium Partners
+1.  **Clone the repository:**
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+    ```bash
+    git clone https://github.com/victorazangu/bus_fare_payment_and_ticketing_system.git
+    cd bus_fare_payment_and_ticketing_system
+    ```
 
-## Contributing
+2.  **Install Composer dependencies:**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    ```bash
+    composer install
+    ```
 
-## Code of Conduct
+3.  **Copy the `.env.example` file to `.env` and configure your database:**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    ```bash
+    cp .env.example .env
+    ```
 
-## Security Vulnerabilities
+    Edit the `.env` file with your database credentials:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    ```
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=your_database_name
+    DB_USERNAME=your_database_username
+    DB_PASSWORD=your_database_password
+    ```
 
-## License
+4.  **Generate an application key:**
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    ```bash
+    php artisan key:generate
+    ```
+
+5.  **Run database migrations:**
+
+    ```bash
+    php artisan migrate
+    ```
+
+6.  **Install NPM dependencies:**
+
+    ```bash
+    npm install
+    ```
+
+7.  **Compile assets with Vite:**
+
+    ```bash
+    npm run dev
+    ```
+
+8.  **Seed the database (optional):**
+
+    ```bash
+    php artisan db:seed
+    ```
+
+9. **Start the development server:**
+
+    ```bash
+    php artisan serve
+    ```
+
+    In a separate terminal, run:
+
+    ```bash
+    npm run watch
+    ```
+
+## Configuration
+
+### Environment Variables
+
+*   **`APP_NAME`:** The name of your application.
+*   **`APP_ENV`:** The environment your application is running in (e.g., `local`, `production`).
+*   **`APP_DEBUG`:** Enable or disable debugging mode (`true` or `false`).
+*   **`APP_URL`:** The URL of your application.
+*   **`DB_CONNECTION`:** The database connection to use (e.g., `mysql`, `pgsql`).
+*   **`DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`:** Database connection details.
+*   **`BROADCAST_DRIVER`, `CACHE_DRIVER`, `FILESYSTEM_DRIVER`, `QUEUE_CONNECTION`, `SESSION_DRIVER`:** Configuration for various Laravel services.
+
+
+
+## Database Schema
+
+The database schema includes the following tables:
+
+*   `users`: Stores user information (passengers, administrators, drivers).
+*   `buses`: Stores bus information (registration number, capacity, model, year, location).
+*   `routes`: Stores route information (origin, destination, distance, estimated travel time).
+*   `schedules`: Stores schedule information (bus ID, route ID, departure time, fare).
+*   `bookings`: Stores booking information (user ID, schedule ID, seat numbers, QR code, payment status, total fare).
+*   `payment_transactions`: Stores payment transaction details (booking ID, transaction ID, amount, payment method, status).
+*   `seats`: Stores individual seat information (bus ID, seat number).
+*   `schedule_seats`: Stores seats allocation for different schedules.
+*   `bus_drivers`: Stores information about the bus and driver assignment.
+*   `promotions`: Stores promotion codes and discounts, start date, end date, discount amount, discount percentage, code.
+*   `cancellations`: Stores information about ticket cancellations and refunds.
+*   `notifications`: Stores notifications sent to users.
+
+
+

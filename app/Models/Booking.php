@@ -40,4 +40,9 @@ class Booking extends Model
     {
         return $this->belongsTo(Promotion::class);
     }
+
+    protected $casts = [
+        'booking_date' => 'date',
+    ];
+
 }
