@@ -16,8 +16,8 @@ const Table = ({ columns = [], data = [] }) => {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
                     {data.length > 0 ? (
-                        data.map((item) => (
-                            <tr key={item.id}>
+                        data.map((item, idx) => (
+                            <tr key={idx}>
                                 {columns.map((column, index) => (
                                     <td
                                         key={`${item.id}-${column.key || index}`}

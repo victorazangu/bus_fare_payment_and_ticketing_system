@@ -18,7 +18,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const [notifications, setNotifications] = useState([
         {
             id: 1,
-            message: 'New booking received for Route A',
+            message: 'New booking received for route A',
             sent_at: '2024-10-27 10:00',
         },
         {
@@ -42,9 +42,6 @@ export default function AuthenticatedLayout({ header, children }) {
         //     sent_at: '2024-10-25 20:00',
         // },
     ]);
-    console.log('isAdmin ', isAdmin);
-    console.log('isPassenger ', isPassenger);
-    console.log('isDriver ', isDriver);
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
     };
@@ -67,10 +64,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Dashboard
                                     </NavLink>
                                     <NavLink
-                                        href={route('admin.routes.index')}
-                                        active={route().current(
-                                            'admin.routes.*',
-                                        )}
+                                        href={route('routes.index')}
+                                        active={route().current('routes.*')}
                                     >
                                         Routes
                                     </NavLink>
@@ -155,10 +150,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Buses
                                     </NavLink>
                                     <NavLink
-                                        href={route('passenger.routes.index')}
-                                        active={route().current(
-                                            'passenger.routes.index',
-                                        )}
+                                        href={route('routes.index')}
+                                        active={route().current('routes.index')}
                                     >
                                         Routes
                                     </NavLink>
@@ -211,10 +204,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Bus
                                     </NavLink>
                                     <NavLink
-                                        href={route('driver.routes.index')}
-                                        active={route().current(
-                                            'driver.routes.*',
-                                        )}
+                                        href={route('routes.index')}
+                                        active={route().current('routes.*')}
                                     >
                                         Route
                                     </NavLink>

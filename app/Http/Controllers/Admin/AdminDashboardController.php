@@ -113,7 +113,7 @@ class AdminDashboardController
         $columns = [
             ['key' => 'id', 'title' => 'Booking ID'],
             ['key' => 'user', 'title' => 'Passenger Name'],
-            ['key' => 'schedule', 'title' => 'Route'],
+            ['key' => 'schedule', 'title' => 'route'],
             ['key' => 'seat_numbers', 'title' => 'Seat Numbers'],
             ['key' => 'booking_date', 'title' => 'Booking Date'],
             ['key' => 'payment_status', 'title' => 'Payment Status'],

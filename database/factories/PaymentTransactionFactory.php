@@ -18,8 +18,9 @@ class PaymentTransactionFactory extends Factory
      */
     public function definition(): array
     {
-        $booking = Booking::factory()->create();
+        $booking = Booking::inRandomOrder()->first();
         $paymentDate = Carbon::now()->subDays(rand(0, 3));
+        $randomDate = Carbon::now()->subDays(rand(0, 365));
         return [
             'booking_id' => $booking->id,
             'transaction_id' => fake()->uuid,
@@ -27,8 +28,8 @@ class PaymentTransactionFactory extends Factory
             'payment_method' => fake()->randomElement(['credit_card', 'paypal', 'mobile_money', 'mpesa', 'cash']),
             'status' => fake()->randomElement(['success', 'failed', 'pending']),
             'payment_date' => $paymentDate,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_at' => $randomDate,
+            'updated_at' => $randomDate->addHours(rand(1, 48))
         ];
     }
 }

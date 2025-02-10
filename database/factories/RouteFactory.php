@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,13 +23,14 @@ class RouteFactory extends Factory
             $destination = fake()->city();
         }
         $distance = fake()->numberBetween(50, 500);
+        $randomDate = Carbon::now()->subDays(rand(0, 365));
         return [
             'origin' => $origin,
             'destination' => $destination,
             'distance' => $distance,
             'estimated_travel_time' => fake()->numberBetween(1, 8),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_at' => $randomDate,
+            'updated_at' => $randomDate->addHours(rand(1, 48))
         ];
     }
 }

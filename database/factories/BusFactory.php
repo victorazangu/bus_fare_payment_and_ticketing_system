@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,6 +18,7 @@ class BusFactory extends Factory
     public function definition(): array
     {
         $capacity = fake()->numberBetween(20, 50);
+        $randomDate = Carbon::now()->subDays(rand(0, 365));
         return [
             'registration_number' => fake()->unique()->regexify('[A-Z]{3}[0-9]{3}'),
             'capacity' => $capacity,
@@ -24,8 +26,8 @@ class BusFactory extends Factory
             'year' => fake()->numberBetween(2010, 2023),
             'latitude' => fake()->latitude(),
             'longitude' => fake()->longitude(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_at' => $randomDate,
+            'updated_at' => $randomDate->addHours(rand(1, 48))
         ];
     }
 }

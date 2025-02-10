@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Common;
 
-use App\Http\Requests\StoreRouteRequest;
-use App\Http\Requests\UpdateRouteRequest;
 use App\Models\Route;
 use App\Models\Schedule;
-use App\Models\User;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class RouteController extends Controller
+class RouteController
 {
     /**
      * Display a listing of the resource.
@@ -17,12 +15,13 @@ class RouteController extends Controller
     public function index()
     {
         $routes = $this->getTrips();
-        return Inertia::render('Common/route/Index',
-            ["routes" => $routes]
+        return Inertia::render('Common/Route/Index',
+            ['routes' => $routes]
         );
+
     }
 
-    public function getTrips()
+    public function getTrips(): array
     {
         $routes = Schedule::select('schedules.id', 'routes.origin', 'routes.destination', 'schedules.departure_time', 'schedules.arrival_time', 'buses.registration_number')
             ->join('bus_drivers', 'schedules.id', '=', 'bus_drivers.schedule_id')
@@ -30,7 +29,6 @@ class RouteController extends Controller
             ->join('routes', 'schedules.route_id', '=', 'routes.id')
             ->orderBy('schedules.departure_time', 'desc')
             ->get();
-
         return [
             'routes' => $routes,
             'columns' => [
@@ -55,7 +53,7 @@ class RouteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRouteRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -79,9 +77,9 @@ class RouteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRouteRequest $request, Route $route)
+    public function update(Request $request, Route $route)
     {
-        //
+        dd("ok");
     }
 
     /**
@@ -89,6 +87,7 @@ class RouteController extends Controller
      */
     public function destroy(Route $route)
     {
-        //
+        dd("ok");
+        Route::destroy($route);
     }
 }

@@ -13,7 +13,7 @@ class PassengerRouteController
      */
     public function index()
     {
-        return Inertia::render('Passenger/Route/Index');
+        return Inertia::render('Common/route/Index');
     }
 
     /**

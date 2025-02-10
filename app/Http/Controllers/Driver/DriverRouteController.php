@@ -13,7 +13,7 @@ class DriverRouteController
      */
     public function index()
     {
-        return Inertia::render('Driver/Route/Index');
+        return Inertia::render('Common/route/Index');
     }
 
     /**

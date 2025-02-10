@@ -18,16 +18,17 @@ class CancellationFactory extends Factory
      */
     public function definition(): array
     {
-        $booking = Booking::factory()->create();
+        $booking = Booking::inRandomOrder()->first();
         $cancellationDate = Carbon::now()->subDays(rand(0, 7));
+        $randomDate = Carbon::now()->subDays(rand(0, 365));
         return [
             'booking_id' => $booking->id,
             'cancellation_date' => $cancellationDate,
             'refund_amount' => fake()->randomFloat(2, 0, $booking->total_fare),
             'reason' => fake()->randomElement(['Change of plans', 'Travel issues', 'Other']),
             'status' => fake()->randomElement(['requested', 'approved', 'rejected', 'refunded']),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_at' => $randomDate,
+            'updated_at' => $randomDate->addHours(rand(1, 48))
         ];
     }
 }

@@ -19,10 +19,11 @@ class BookingFactory extends Factory
      */
     public function definition(): array
     {
-        $user = User::factory()->create();
-        $schedule = Schedule::factory()->create();
+        $user = User::where("user_type","passenger")->first();
+        $schedule = Schedule::inRandomOrder()->first();
         $seatNumbers = implode(',', $this->faker->randomElements(['1A', '2B', '3C', '4D', '5E'], $this->faker->numberBetween(1, 3)));
         $bookingDate = Carbon::now()->addDays(rand(1, 30));
+        $randomDate = Carbon::now()->subDays(rand(0, 365));
         return [
             'user_id' => $user->id,
             'schedule_id' => $schedule->id,
@@ -31,8 +32,8 @@ class BookingFactory extends Factory
             'qr_code' => fake()->uuid,
             'payment_status' => fake()->randomElement(['pending', 'completed', 'failed']),
             'total_fare' => fake()->randomFloat(2, 10, 100),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_at' => $randomDate,
+            'updated_at' => $randomDate->addHours(rand(1, 48))
         ];
     }
 }

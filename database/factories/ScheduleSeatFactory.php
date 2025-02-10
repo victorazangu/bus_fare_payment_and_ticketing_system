@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Schedule;
 use App\Models\Seat;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,14 +19,15 @@ class ScheduleSeatFactory extends Factory
      */
     public function definition(): array
     {
-        $schedule = Schedule::factory()->create();
-        $seat = Seat::factory()->create();
+        $schedule = Schedule::inRandomOrder()->first();
+        $seat = Seat::inRandomOrder()->first();
+        $randomDate = Carbon::now()->subDays(rand(0, 365));
         return [
             'schedule_id' => $schedule->id,
             'seat_id' => $seat->id,
             'is_booked' => fake()->boolean(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_at' => $randomDate,
+            'updated_at' => $randomDate->addHours(rand(1, 48))
         ];
     }
 }

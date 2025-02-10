@@ -20,17 +20,18 @@ class BusDriverFactory extends Factory
      */
     public function definition(): array
     {
-        $bus = Bus::factory()->create();
-        $driver = User::factory()->create();
-        $schedule = Schedule::factory()->create();
+        $bus = Bus::inRandomOrder()->first();
+        $driver = User::where("user_type","driver")->first();
+        $schedule = Schedule::inRandomOrder()->first();
         $assignmentDate = Carbon::now()->subDays(rand(0, 365));
+        $randomDate = Carbon::now()->subDays(rand(0, 365));
         return [
             'bus_id' => $bus->id,
             'user_id' => $driver->id,
             'schedule_id' => $schedule->id,
             'assignment_date' => $assignmentDate,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_at' => $randomDate,
+            'updated_at' => $randomDate->addHours(rand(1, 48))
         ];
     }
 }

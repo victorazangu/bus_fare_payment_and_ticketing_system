@@ -6,9 +6,10 @@ use App\Http\Controllers\Admin\BusController;
 use App\Http\Controllers\Admin\CancellationController;
 use App\Http\Controllers\Admin\PaymentTransactionController;
 use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Admin\RouteController;
+//use App\Http\Controllers\Admin\RouteController;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Common\RouteController;
 use App\Http\Controllers\Driver\DriverBusController;
 use App\Http\Controllers\Driver\DriverDashboardController;
 use App\Http\Controllers\Driver\DriverRouteController;
@@ -45,11 +46,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('/routes', RouteController::class)->names('routes');
 
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
         //    routes
-        Route::resource('/routes', RouteController::class)->names('admin.routes');
+
 
         //    schedules
         Route::resource('/schedules', ScheduleController::class)->names('admin.schedules');

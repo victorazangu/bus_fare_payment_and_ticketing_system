@@ -10,14 +10,14 @@ class PaymentTransaction extends Model
     /** @use HasFactory<\Database\Factories\PaymentTransactionFactory> */
     use HasFactory;
 
-    protected $fillable = [
+    protected $fillable = array(
         'booking_id',
         'transaction_id',
         'amount',
         'payment_method',
         'status',
         'payment_date',
-    ];
+    );
 
     public function booking()
     {

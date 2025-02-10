@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -23,6 +24,7 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $randomDate = Carbon::now()->subDays(rand(0, 365));
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
@@ -32,6 +34,8 @@ class UserFactory extends Factory
             'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),
             'remember_token' => Str::random(10),
+            'created_at' => $randomDate,
+            'updated_at' => $randomDate->addHours(rand(1, 48))
         ];
     }
 
