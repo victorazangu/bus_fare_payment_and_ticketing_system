@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('user_type')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
+            $table->string('image')->default('default.png');
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

@@ -32,24 +32,31 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            "phone" => 'required|string|max:255',
-            "address" => 'required|string|max:255',
+            'phone' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $image = 'default.png';
+        if ($request->hasFile('image')) {
+            $image = $request->file('image')->store('images', 'public');
+        }
+
         $user = User::create([
             'name' => $request->name,
-            "phone" => 'required|string|max:255',
-            "address" => 'required|string|max:255',
+            'phone' => $request->phone,
+            'address' => $request->address,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            "user_type" => 'admin',
+            'user_type' => 'admin',
+            'image' => $image,
         ]);
 
         event(new Registered($user));
-
         Auth::login($user);
-        return redirect(route('home', absolute: false));
+
+        return redirect(route('home'));
     }
+
 }
