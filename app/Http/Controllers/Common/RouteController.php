@@ -12,31 +12,38 @@ class RouteController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $routes = $this->getTrips();
+        $routes = $this->getTrips($request);
         return Inertia::render('Common/Route/Index',
-            ['routes' => $routes]
+            [
+                'routes' => $routes,
+                "success" => session('success')
+            ]
         );
 
     }
 
-    public function getTrips(): array
+    public function getTrips($request): array
     {
-        $routes = Schedule::select('schedules.id', 'routes.origin', 'routes.destination', 'schedules.departure_time', 'schedules.arrival_time', 'buses.registration_number')
-            ->join('bus_drivers', 'schedules.id', '=', 'bus_drivers.schedule_id')
-            ->join('buses', 'schedules.bus_id', '=', 'buses.id')
-            ->join('routes', 'schedules.route_id', '=', 'routes.id')
-            ->orderBy('schedules.departure_time', 'desc')
+        $search = $request->input('search');
+        $routes = Route::with(['schedules'])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('origin', 'like', "%{$search}%")
+                        ->orWhere('destination', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('created_at', 'desc')
             ->get();
         return [
             'routes' => $routes,
             'columns' => [
-                ['key' => 'registration_number', 'title' => 'Bus'],
                 ['key' => 'origin', 'title' => 'Origin'],
                 ['key' => 'destination', 'title' => 'Destination'],
-                ['key' => 'departure_time', 'title' => 'Departure Time'],
+                ['key' => 'schedules.departure_time', 'title' => 'Departure Time'],
                 ['key' => 'arrival_time', 'title' => 'Arrival Time'],
+                ['key' => 'distance', 'title' => 'Distance'],
             ],
         ];
     }
@@ -55,7 +62,16 @@ class RouteController
      */
     public function store(Request $request)
     {
-        //
+
+        $data = $request->validate([
+            'origin' => 'required',
+            'destination' => 'required',
+            'distance' => 'required|numeric',
+            'estimated_travel_time' => 'required',
+        ]);
+        $route = Route::create($data);
+//        dd($route);
+        return redirect()->back()->with('success', 'Route created successfully.');
     }
 
     /**

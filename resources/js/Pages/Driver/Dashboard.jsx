@@ -7,7 +7,7 @@ export default function Dashboard({
     totals,
     recentTrips,
     driverNotifications,
-                                      availableBuses,
+    availableBuses,
 }) {
     return (
         <AuthenticatedLayout>

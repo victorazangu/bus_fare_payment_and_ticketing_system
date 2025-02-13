@@ -44,12 +44,12 @@ class RegisteredUserController extends Controller
             "address" => 'required|string|max:255',
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            "user_type" => 'admin',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
-
         return redirect(route('home', absolute: false));
     }
 }
