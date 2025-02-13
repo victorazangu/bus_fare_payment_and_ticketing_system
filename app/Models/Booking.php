@@ -36,10 +36,11 @@ class Booking extends Model
         return $this->hasOne(PaymentTransaction::class);
     }
 
-    public function promotion()
+    public function cancellations()
     {
-        return $this->belongsTo(Promotion::class);
+        return $this->hasMany(Cancellation::class);
     }
+
 
     protected $casts = [
         'booking_date' => 'date',

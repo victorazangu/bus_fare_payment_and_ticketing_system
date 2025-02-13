@@ -1,5 +1,4 @@
 const TopBarStat = ({ stats }) => {
-    console.log('stats stats stats', stats);
     return (
         <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
             {stats.map(({ label, value, color }, index) =>

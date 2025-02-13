@@ -5,7 +5,7 @@ export default function DeleteRouteConfirmation({
     isOpen,
     onClose,
     routeId,
-    onDelete,
+    onConfirm,
 }) {
     const [confirming, setConfirming] = useState(false);
     const { delete: destroy, processing } = useForm();
@@ -13,10 +13,9 @@ export default function DeleteRouteConfirmation({
     const submit = (e) => {
         e.preventDefault();
         if (!confirming) return;
-
         destroy(route('routes.destroy', routeId), {
             onSuccess: () => {
-                onDelete();
+                onConfirm();
                 onClose();
             },
         });

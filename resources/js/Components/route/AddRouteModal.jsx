@@ -30,7 +30,6 @@ export default function AddRouteModal({ isOpen, onClose, routeData, onSave }) {
 
         post(route('routes.store'), {
             onSuccess: () => {
-                console.log(data);
                 onSave(data);
                 onClose();
             },

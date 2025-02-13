@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('bus_drivers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bus_id')->constrained();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('bus_id')->constrained()->cascadeOnDelete();;
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();;
             $table->foreignId('schedule_id')->nullable()->constrained();
             $table->date('assignment_date');
             $table->softDeletes();

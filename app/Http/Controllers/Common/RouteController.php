@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Common;
 
 use App\Models\Route;
 use App\Models\Schedule;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -27,7 +28,7 @@ class RouteController
     public function getTrips($request): array
     {
         $search = $request->input('search');
-        $routes = Route::with(['schedules'])
+        $routes = Route::latest()
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('origin', 'like', "%{$search}%")
@@ -41,9 +42,9 @@ class RouteController
             'columns' => [
                 ['key' => 'origin', 'title' => 'Origin'],
                 ['key' => 'destination', 'title' => 'Destination'],
-                ['key' => 'schedules.departure_time', 'title' => 'Departure Time'],
-                ['key' => 'arrival_time', 'title' => 'Arrival Time'],
                 ['key' => 'distance', 'title' => 'Distance'],
+                ['key' => 'created_at', 'title' => 'Created on Date'],
+                ['key' => 'updated_at', 'title' => 'Last Update Date'],
             ],
         ];
     }
@@ -95,7 +96,14 @@ class RouteController
      */
     public function update(Request $request, Route $route)
     {
-        dd("ok");
+        $data = $request->validate([
+            'origin' => 'required|string|max:255',
+            'destination' => 'required|string|max:255',
+            'distance' => 'required|numeric',
+            'estimated_travel_time' => 'required|string',
+        ]);
+        $route->update($data);
+        return redirect()->route('routes.index')->with('success', 'Route updated successfully.');
     }
 
     /**
@@ -103,7 +111,8 @@ class RouteController
      */
     public function destroy(Route $route)
     {
-        dd("ok");
-        Route::destroy($route);
+        $deleted = Route::destroy($route->id);
+        return redirect()->route('routes.index')->with('success', 'Route deleted successfully.');
     }
+
 }

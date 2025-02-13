@@ -17,8 +17,32 @@ class Route extends Model
         'estimated_travel_time',
     ];
 
+    protected $casts = [
+        'created_at' => 'date',
+        'updated_at' => 'date',
+    ];
+
     public function schedules()
     {
         return $this->hasMany(Schedule::class);
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($route) {
+            $route->schedules()->each(function ($schedule) {
+                $schedule->bookings->each(function ($booking) {
+                    $booking->paymentTransaction()->delete();
+                    $booking->cancellations()->delete();
+                });
+
+                $schedule->bookings()->delete();
+                $schedule->scheduleSeats()->delete();
+                $schedule->busDrivers()->delete(); // Delete bus drivers
+                $schedule->delete();
+            });
+        });
+    }
+
+
 }

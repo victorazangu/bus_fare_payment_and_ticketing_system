@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,7 +13,7 @@ return new class extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('bus_id')->constrained();
-            $table->foreignId('route_id')->constrained();
+            $table->foreignId('route_id')->nullable()->constrained()->cascadeOnDelete();
             $table->time('departure_time');
             $table->time('arrival_time');
             $table->decimal('fare', 8, 2);

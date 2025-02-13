@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('seats', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bus_id')->constrained();
+            $table->foreignId('bus_id')->constrained()->cascadeOnDelete();;
             $table->string('seat_number');
             $table->softDeletes();
             $table->timestamps();

@@ -23,26 +23,23 @@ export default function Index({ routes }) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedRoute, setSelectedRoute] = useState(null);
     const [selectedRouteId, setSelectedRouteId] = useState(null);
-    const [search, setSearch] = useState('');
 
     function handleView(id) {
-        console.log('id for view', id);
+        console.log(id);
         setIsViewModalOpen(true);
     }
 
     function handleEdit(id) {
-        console.log('id for edit ', id);
         const routeToEdit = routes.routes.find((route) => route.id === id);
         setSelectedRoute(routeToEdit);
         setIsEditModalOpen(true);
     }
 
     const user = usePage().props.auth.user;
-    const { flash } = usePage().props;
-    console.log('flash ', flash);
+
+    // const { flash } = usePage().props;
 
     function handleDelete(id) {
-        console.log('id for delete', id);
         setSelectedRouteId(id);
         setIsDeleteOpen(true);
     }
@@ -121,9 +118,8 @@ export default function Index({ routes }) {
                     <DeleteRouteConfirmation
                         isOpen={isDeleteOpen}
                         onClose={() => setIsDeleteOpen(false)}
-                        routeId={selectedRoute}
+                        routeId={selectedRouteId}
                         onConfirm={() => {
-                            console.log('Deleting route ID:', selectedRouteId);
                             setIsDeleteOpen(false);
                         }}
                     />
@@ -135,7 +131,7 @@ export default function Index({ routes }) {
                         onClose={() => setIsEditModalOpen(false)}
                         routeData={selectedRoute}
                         onSave={(updatedData) => {
-                            console.log('Saving updated route:', updatedData);
+                            console.log(updatedData);
                             setIsEditModalOpen(false);
                         }}
                     />
@@ -146,7 +142,7 @@ export default function Index({ routes }) {
                         onClose={() => setIsAddModalOpen(false)}
                         routeData={selectedRoute}
                         onSave={(addData) => {
-                            console.log('Saving updated route:', addData);
+                            console.log(addData);
                             setIsAddModalOpen(false);
                         }}
                     />
