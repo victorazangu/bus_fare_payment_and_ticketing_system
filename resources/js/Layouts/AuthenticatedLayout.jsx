@@ -7,7 +7,11 @@ import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+    const { auth } = usePage().props;
+    const user = auth.user;
+    const notifications = auth.notifications;
+    const read_count = auth.read_count;
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -15,33 +19,6 @@ export default function AuthenticatedLayout({ header, children }) {
     const isAdmin = user?.user_type === 'admin';
     const isPassenger = user?.user_type === 'passenger';
     const isDriver = user?.user_type === 'driver';
-    const [notifications, setNotifications] = useState([
-        {
-            id: 1,
-            message: 'New booking received for route A',
-            sent_at: '2024-10-27 10:00',
-        },
-        {
-            id: 2,
-            message: 'Bus 123 is delayed by 30 minutes',
-            sent_at: '2024-10-27 09:30',
-        },
-        {
-            id: 3,
-            message: 'Promotion code SUMMER20 is expiring soon',
-            sent_at: '2024-10-26 18:00',
-        },
-        {
-            id: 4,
-            message: 'A user cancelled booking #456',
-            sent_at: '2024-10-26 12:00',
-        },
-        // {
-        //     id: 5,
-        //     message: 'Maintenance scheduled for Bus 789',
-        //     sent_at: '2024-10-25 20:00',
-        // },
-    ]);
     const toggleModal = () => {
         setIsModalOpen(!isModalOpen);
     };
@@ -52,7 +29,6 @@ export default function AuthenticatedLayout({ header, children }) {
                 <div className="mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         <div className="flex">
-                            {/* Admin Navigation */}
                             {isAdmin && (
                                 <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                     <NavLink
@@ -156,11 +132,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Routes
                                     </NavLink>
                                     <NavLink
-                                        href={route(
-                                            'passenger.notifications.index',
-                                        )}
+                                        href={route('notifications.index')}
                                         active={route().current(
-                                            'passenger.notifications.index',
+                                            'notifications.index',
                                         )}
                                     >
                                         Notification
@@ -214,14 +188,12 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                            {/*to add notification here*/}
                             <button onClick={toggleModal} className="relative">
                                 <BellIcon className="h-9 w-9 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" />
-                                {notifications.length > 0 && (
-                                    <span className="absolute right-0 top-1 inline-flex items-center justify-center rounded-full bg-red-600 px-2 py-1 text-xs font-bold leading-none text-red-100">
-                                        {notifications.length}
-                                    </span>
-                                )}
+
+                                <span className="absolute right-0 top-1 inline-flex items-center justify-center rounded-full bg-red-600 px-2 py-1 text-xs font-bold leading-none text-red-100">
+                                    {read_count}
+                                </span>
                             </button>
                             <div className="relative ms-3">
                                 <Dropdown>
@@ -231,6 +203,11 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 type="button"
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
                                             >
+                                                <img
+                                                    src={`/${user.image}`}
+                                                    alt={user.name}
+                                                    className="me-2 h-7 w-7 rounded-full object-cover"
+                                                />
                                                 {user.name}
 
                                                 <svg

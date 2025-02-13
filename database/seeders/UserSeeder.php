@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
 
         foreach ($users as $user) {
             User::updateOrCreate(
-                ['email' => $user['email']], // Ensure no duplicates
+                ['email' => $user['email']],
                 array_merge($user, [
                     'email_verified_at' => now(),
                     'password' => Hash::make('password'),

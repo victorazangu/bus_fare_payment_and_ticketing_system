@@ -1,4 +1,16 @@
+import { EnvelopeIcon } from '@heroicons/react/24/outline';
+import { EnvelopeOpenIcon } from '@heroicons/react/24/solid';
+import { useForm } from '@inertiajs/react';
+
 function NotificationModal({ notifications, onClose }) {
+    const { setData, patch } = useForm();
+    const markAsRead = (notification) => {
+        setData('is_read', true);
+        patch(route('notifications.update', notification.id), {
+            preserveState: true,
+        });
+    };
+
     return (
         <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gray-500 bg-opacity-75">
             <div className="w-full max-w-md overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-800">
@@ -9,13 +21,29 @@ function NotificationModal({ notifications, onClose }) {
                 </div>
                 <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                     {notifications.map((notification) => (
-                        <li key={notification.id} className="px-6 py-4">
-                            <p className="text-sm text-gray-700 dark:text-gray-300">
-                                {notification.message}
-                            </p>
-                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                {notification.sent_at}
-                            </p>
+                        <li
+                            key={notification.id}
+                            className="cursor-pointer px-6 py-4"
+                            onClick={() => markAsRead(notification)}
+                        >
+                            <div className="flex items-start justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                                        {notification.message}
+                                    </p>
+                                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        {notification.sent_at}
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                    {notification.read_at ? (
+                                        <EnvelopeOpenIcon className="h-10 w-10 text-green-500 dark:text-green-400" />
+                                    ) : (
+                                        <EnvelopeIcon className="h-10 w-10 text-red-500 dark:text-red-400" />
+                                    )}
+                                </div>
+                            </div>
                         </li>
                     ))}
                     {notifications.length === 0 && (

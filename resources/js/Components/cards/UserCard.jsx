@@ -1,15 +1,13 @@
 const UserCard = ({ member, handleCardClick }) => {
+    const image = member.image ? `${member.image}` : '/storage/default.png';
+    console.log('image ', member.image);
     return (
         <div
             className="cursor-pointer overflow-hidden rounded-lg bg-gray-700 shadow-lg transition-transform hover:scale-105"
             onClick={() => handleCardClick(member.id)}
         >
             <img
-                src={
-                    member.image === 'default.png'
-                        ? `/images/${member.image}`
-                        : `/storage/${member.image}`
-                }
+                src={`/${image}`}
                 alt={member.name}
                 className="h-48 w-full object-cover"
             />

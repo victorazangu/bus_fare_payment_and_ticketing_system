@@ -65,7 +65,7 @@ export default function Dashboard({
                 </div>
                 <div className="mt-6 rounded-lg bg-gray-800 p-4">
                     <h2 className="mb-2 text-lg font-semibold text-gray-200">
-                        Notifications
+                        Recent Bookings
                     </h2>
                     <Table
                         columns={mostRecentBooking.columns}

@@ -4,7 +4,9 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline/index.js';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useState } from 'react';
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -19,6 +21,11 @@ export default function Login({ status, canResetPassword }) {
         post(route('login'), {
             onFinish: () => reset('password'),
         });
+    };
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
     };
 
     return (
@@ -49,18 +56,28 @@ export default function Login({ status, canResetPassword }) {
                     <InputError message={errors.email} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
+                <div className="relative mt-4">
                     <InputLabel htmlFor="password" value="Password" />
 
                     <TextInput
                         id="password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full pr-10"
                         autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
                     />
+                    <span
+                        onClick={togglePasswordVisibility}
+                        className="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3"
+                    >
+                        {showPassword ? (
+                            <EyeSlashIcon className="mt-5 h-5 w-5 text-gray-500" />
+                        ) : (
+                            <EyeIcon className="mt-5 h-5 w-5 text-gray-500" />
+                        )}
+                    </span>
 
                     <InputError message={errors.password} className="mt-2" />
                 </div>

@@ -12,7 +12,7 @@ class Notification extends Model
 
     protected $fillable = [
         'user_id',
-        'type', // e.g., 'booking_confirmation', 'reminder', 'delay_alert'
+        'type',
         'message',
         'sent_at',
         'read_at',
@@ -22,4 +22,13 @@ class Notification extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    protected function casts(): array
+    {
+        return [
+            'sent_at' => 'datetime',
+            'read_at' => 'datetime',
+        ];
+    }
+
 }

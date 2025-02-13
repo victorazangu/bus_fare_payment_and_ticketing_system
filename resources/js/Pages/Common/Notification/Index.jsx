@@ -9,7 +9,7 @@ export default function Index() {
                 <div className="flex justify-between pb-3">
                     <SearchComponent routeName="routes.index" />
                 </div>
-                <h1 className="text-white">Passenger Notifications</h1>
+                <h1 className="text-white">Notifications</h1>
             </MainBody>
         </AuthenticatedLayout>
     );

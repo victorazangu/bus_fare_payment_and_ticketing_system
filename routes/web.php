@@ -6,9 +6,9 @@ use App\Http\Controllers\Admin\BusController;
 use App\Http\Controllers\Admin\CancellationController;
 use App\Http\Controllers\Admin\PaymentTransactionController;
 use App\Http\Controllers\Admin\ProfileController;
-//use App\Http\Controllers\Admin\RouteController;
 use App\Http\Controllers\Admin\ScheduleController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Common\NotificationController;
 use App\Http\Controllers\Common\RouteController;
 use App\Http\Controllers\Driver\DriverBusController;
 use App\Http\Controllers\Driver\DriverDashboardController;
@@ -17,7 +17,6 @@ use App\Http\Controllers\Driver\DriverScheduleController;
 use App\Http\Controllers\Passenger\PassengerBookingController;
 use App\Http\Controllers\Passenger\PassengerBusController;
 use App\Http\Controllers\Passenger\PassengerDashboardController;
-use App\Http\Controllers\Passenger\PassengerNotificationController;
 use App\Http\Controllers\Passenger\PassengerPaymentTransactionController;
 use App\Http\Controllers\Passenger\PassengerRouteController;
 use Illuminate\Support\Facades\Redirect;
@@ -47,11 +46,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('/routes', RouteController::class)->names('routes');
+    Route::resource('/notifications', NotificationController::class)->names('notifications');
 
     Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
         //    routes
-
 
         //    schedules
         Route::resource('/schedules', ScheduleController::class)->names('admin.schedules');
@@ -86,9 +85,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         //    payments
         Route::resource('/payments', PassengerPaymentTransactionController::class)->names('passenger.payments');
-
-        // notifications
-        Route::resource('/notifications', PassengerNotificationController::class)->names('passenger.notifications');
 
     });
 
