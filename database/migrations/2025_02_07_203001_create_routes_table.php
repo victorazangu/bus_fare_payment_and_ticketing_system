@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('origin');
             $table->string('destination');
-            $table->decimal('distance', 8, 2);
+            $table->decimal('distance', 8, 1);
             $table->string('estimated_travel_time');
             $table->softDeletes();
             $table->timestamps();

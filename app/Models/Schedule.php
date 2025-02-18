@@ -44,4 +44,10 @@ class Schedule extends Model
     {
         return $this->hasMany(BusDriver::class);
     }
+
+    protected $casts = [
+        'fare' => 'float',
+        "departure_time" => "datetime",
+        "arrival_time" => "datetime",
+    ];
 }

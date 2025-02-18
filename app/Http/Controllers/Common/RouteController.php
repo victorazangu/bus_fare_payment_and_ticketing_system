@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Common;
 
+use App\Http\Controllers\Controller;
 use App\Models\Route;
-use App\Models\Schedule;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class RouteController
+class RouteController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -28,6 +27,7 @@ class RouteController
     public function getTrips($request): array
     {
         $search = $request->input('search');
+
         $routes = Route::latest()
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -36,7 +36,20 @@ class RouteController
                 });
             })
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
+
+        $routes->getCollection()->transform(function ($trip) {
+            return [
+                'id' => $trip->id,
+                'origin' => $trip->origin,
+                'destination' => $trip->destination,
+                'distance' => $trip->distance." KM",
+                'created_at' => $trip->created_at->toDateTimeString(),
+                'updated_at' => $trip->updated_at->diffForHumans(),
+            ];
+        });
+
         return [
             'routes' => $routes,
             'columns' => [
@@ -71,7 +84,6 @@ class RouteController
             'estimated_travel_time' => 'required',
         ]);
         $route = Route::create($data);
-//        dd($route);
         return redirect()->back()->with('success', 'Route created successfully.');
     }
 

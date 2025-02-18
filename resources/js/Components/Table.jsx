@@ -1,3 +1,5 @@
+import Pagination from '@/Components/Pagination.jsx';
+
 const Table = ({ columns = [], data = [] }) => {
     return (
         <div className="overflow-x-auto">
@@ -15,8 +17,8 @@ const Table = ({ columns = [], data = [] }) => {
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
-                    {data.length > 0 ? (
-                        data.map((item, idx) => (
+                    {data?.data?.length > 0 ? (
+                        data.data.map((item, idx) => (
                             <tr key={idx}>
                                 {columns.map((column, index) => (
                                     <td
@@ -42,6 +44,8 @@ const Table = ({ columns = [], data = [] }) => {
                     )}
                 </tbody>
             </table>
+
+            {data && data.links && <Pagination links={data.links} />}
         </div>
     );
 };

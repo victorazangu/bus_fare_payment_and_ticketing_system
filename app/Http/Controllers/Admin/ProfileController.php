@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -31,7 +30,6 @@ class ProfileController extends Controller
      */
     public function update(Request $request): RedirectResponse
     {
-        Log::info('Image Received:', ['image' => $request->hasFile('image')]);
         $user = $request->user();
         if ($request->hasFile('image')) {
             $image = $request->file('image');

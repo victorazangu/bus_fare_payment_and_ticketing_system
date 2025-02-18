@@ -14,7 +14,6 @@ export default function Register() {
         password: '',
         password_confirmation: '',
     });
-
     const submit = (e) => {
         e.preventDefault();
         post(route('register'), {
@@ -29,7 +28,6 @@ export default function Register() {
             <form onSubmit={submit}>
                 <div>
                     <InputLabel htmlFor="name" value="Name" />
-
                     <TextInput
                         id="name"
                         name="name"
@@ -40,7 +38,6 @@ export default function Register() {
                         onChange={(e) => setData('name', e.target.value)}
                         required
                     />
-
                     <InputError message={errors.name} className="mt-2" />
                 </div>
 
@@ -145,7 +142,7 @@ export default function Register() {
                         }
                     />
 
-                    <InputError message={errors.phone} className="mt-2" />
+                    <InputError message={errors.user_type} className="mt-2" />
                 </div>
 
                 <div className="mt-4 flex items-center justify-end">

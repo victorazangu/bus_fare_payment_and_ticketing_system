@@ -15,7 +15,7 @@ export default function Dashboard({
     mostRecentBooking,
     userTypeData,
 }) {
-    console.log('totals ', totals);
+
 
     return (
         <AuthenticatedLayout>
@@ -105,7 +105,9 @@ export default function Dashboard({
                                 </h3>
                                 <Table
                                     columns={mostRecentPassengers.columns}
-                                    data={mostRecentPassengers?.passengers}
+                                    data={{
+                                        data: mostRecentPassengers?.passengers,
+                                    }}
                                 />
                             </div>
                         </div>
@@ -117,7 +119,7 @@ export default function Dashboard({
                                 </h3>
                                 <Table
                                     columns={mostRecentBooking.columns}
-                                    data={mostRecentBooking?.bookings}
+                                    data={{ data: mostRecentBooking?.bookings }}
                                 />
                             </div>
                         </div>

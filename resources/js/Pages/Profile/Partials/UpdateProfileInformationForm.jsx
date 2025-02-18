@@ -16,7 +16,6 @@ export default function UpdateProfileInformation({
     const [previewImage, setPreviewImage] = useState(
         user.image ? `${user.image}` : '/storage/default.png',
     );
-    console.log('user', user);
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
             name: user.name,
@@ -33,14 +32,11 @@ export default function UpdateProfileInformation({
         formData.append('phone', data.phone);
         formData.append('address', data.address);
         formData.append('email', data.email);
-        console.log('data', data);
         if (data.image instanceof File) {
             formData.append('image', data.image);
         }
 
         formData.append('_method', 'PATCH');
-        console.log('form data', formData.get('image'));
-
         Inertia.post(route('profile.update'), formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -50,7 +46,6 @@ export default function UpdateProfileInformation({
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        console.log('file', file);
         if (file) {
             setData('image', file);
             setPreviewImage(URL.createObjectURL(file));

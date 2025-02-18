@@ -69,4 +69,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notification::class);
     }
+
+    public function isAdmin()
+    {
+        return $this->user_type === 'admin';
+    }
+
+    public function isDriver()
+    {
+        return $this->user_type === 'driver';
+    }
+
+    public function isCustomer()
+    {
+        return $this->user_type === 'passanger';
+    }
+
 }

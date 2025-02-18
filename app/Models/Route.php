@@ -44,5 +44,4 @@ class Route extends Model
         });
     }
 
-
 }

@@ -15,11 +15,18 @@ class Cancellation extends Model
         'cancellation_date',
         'refund_amount',
         'reason',
-        'status', // e.g., 'requested', 'approved', 'rejected', 'refunded'
+        'status',
     ];
 
     public function booking()
     {
         return $this->belongsTo(Booking::class);
+    }
+
+    public function casts(): array
+    {
+        return [
+            "cancellation_date" => "datetime",
+        ];
     }
 }

@@ -20,7 +20,6 @@ class DriverDashboardController
         $recentTrips = $this->getRecentTrips();
         $notifications = $this->getNotifications();
         $availableBuses = $this->getAvailableBuses();
-
         return Inertia::render('Driver/Dashboard', [
             "totals" => $totals,
             "recentTrips" => $recentTrips,

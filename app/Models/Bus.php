@@ -15,8 +15,8 @@ class Bus extends Model
         'capacity',
         'model',
         'year',
-        'latitude',
-        'longitude',
+//        'latitude',
+//        'longitude',
     ];
 
 

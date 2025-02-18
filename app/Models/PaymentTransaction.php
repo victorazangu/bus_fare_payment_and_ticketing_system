@@ -23,4 +23,10 @@ class PaymentTransaction extends Model
     {
         return $this->belongsTo(Booking::class);
     }
+
+    protected function casts(): array
+    {
+        return ['payment_date' => 'date',];
+    }
+
 }

@@ -25,13 +25,12 @@ export default function Index({ routes }) {
     const [selectedRouteId, setSelectedRouteId] = useState(null);
 
     function handleView(id) {
-        console.log(id);
         setIsViewModalOpen(true);
     }
 
     function handleEdit(id) {
-        const routeToEdit = routes.routes.find((route) => route.id === id);
-        setSelectedRoute(routeToEdit);
+        // const routeToEdit = routes.routes.find((route) => route.id === id);
+        // setSelectedRoute(routeToEdit);
         setIsEditModalOpen(true);
     }
 

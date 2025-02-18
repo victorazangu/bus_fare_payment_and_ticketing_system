@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Common;
 
-use App\Http\Controllers\Admin\Controller;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNotificationRequest;
 use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
 
 class NotificationController extends Controller

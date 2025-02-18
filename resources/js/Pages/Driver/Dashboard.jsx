@@ -25,7 +25,7 @@ export default function Dashboard({
                         </h2>
                         <Table
                             columns={recentTrips.columns}
-                            data={recentTrips.trips}
+                            data={{ data: recentTrips.trips }}
                         />
                     </div>
                     <div className="rounded-lg bg-gray-800 p-4 text-white shadow-md">
@@ -34,7 +34,7 @@ export default function Dashboard({
                         </h2>
                         <Table
                             columns={driverNotifications.columns}
-                            data={driverNotifications.notifications}
+                            data={{ data: driverNotifications.notifications }}
                         />
                     </div>
                     <div className="rounded-lg bg-gray-800 p-4 text-white shadow-md">
@@ -43,7 +43,7 @@ export default function Dashboard({
                         </h2>
                         <Table
                             columns={availableBuses.columns}
-                            data={availableBuses.buses}
+                            data={{ data: availableBuses.buses }}
                         />
                     </div>
                 </div>

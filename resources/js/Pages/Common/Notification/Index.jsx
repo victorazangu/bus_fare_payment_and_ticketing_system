@@ -13,7 +13,7 @@ export default function Index({ notifications }) {
                 <div className="p-1">
                     <Table
                         columns={notifications.columns}
-                        data={notifications.notifications}
+                        data={{ data: notifications.notifications }}
                     />
                 </div>
             </MainBody>
