@@ -10,8 +10,11 @@ use App\Models\Route;
 use App\Models\Schedule;
 use App\Models\ScheduleSeat;
 use App\Models\Seat;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class BookingController extends Controller
@@ -40,8 +43,10 @@ class BookingController extends Controller
     public function getAvailableSeats(Request $request)
     {
         $scheduleId = $request->query('schedule_id');
-
-        $availableSeats = Seat::with(['bus'])
+        $availableSeats = Seat::with(['scheduleSeats' => function ($query) use ($scheduleId) {
+            $query->where('schedule_id', $scheduleId)
+                ->where('is_booked', false);
+        }])
             ->whereHas('scheduleSeats', function ($query) use ($scheduleId) {
                 $query->where('schedule_id', $scheduleId)
                     ->where('is_booked', false);
@@ -79,16 +84,21 @@ class BookingController extends Controller
                 $q->where('origin', 'like', "%{$search}%");
             });
         }
-
         $bookings = $query->paginate(10)->withQueryString();
         $bookings->getCollection()->transform(function ($booking) {
+            try {
+                $seatNumbers = $booking->getFormattedSeatNumbersAttribute();
+            } catch (\Exception $e) {
+                $seatNumbers = 'Error retrieving seats';
+            }
+
             return [
                 'id' => $booking->id,
                 'user_name' => $booking->user->name,
                 'registration_number' => $booking->schedule->bus->registration_number,
                 'origin' => $booking->schedule->route->origin,
                 'destination' => $booking->schedule->route->destination,
-                'seat_numbers' => $booking->seat_numbers,
+                'seat_numbers' => $seatNumbers,
                 'booking_date' => $booking->booking_date->toDateString(),
                 'payment_status' => $booking->payment_status,
                 'total_fare' => "KSH " . $booking->total_fare,
@@ -98,9 +108,6 @@ class BookingController extends Controller
 
         return [
             'bookings' => $bookings,
-            'filters' => [
-                'search' => $request->search,
-            ],
             'columns' => [
                 ['key' => 'user_name', 'title' => 'Customer Name'],
                 ['key' => 'registration_number', 'title' => 'Bus Reg Number'],
@@ -127,10 +134,45 @@ class BookingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBookingRequest $request)
+
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'schedule_id' => 'required|exists:schedules,id',
+            'seat_numbers' => 'required|array',
+            'seat_numbers.*' => 'required|integer|exists:seats,id',
+            'booking_date' => 'required|date',
+            'promotion_id' => 'nullable|exists:promotions,id',
+        ]);
+        $schedule = Schedule::findOrFail($request->schedule_id);
+        $totalFare = $schedule->fare * count($request->seat_numbers);
+        $qrCode = Str::random(10);
+        DB::beginTransaction();
+        try {
+            $booking = Booking::create([
+                'user_id' => auth()->user()->id,
+                'schedule_id' => $schedule->id,
+                'seat_numbers' => json_encode($request->seat_numbers),
+                'booking_date' => Carbon::parse($request->booking_date),
+                'payment_status' => 'pending',
+                'total_fare' => $totalFare,
+                'qr_code' => $qrCode,
+            ]);
+            foreach ($request->seat_numbers as $seatId) {
+                ScheduleSeat::updateOrCreate(
+                    ['schedule_id' => $schedule->id, 'seat_id' => $seatId],
+                    ['is_booked' => true]
+                );
+            }
+            $schedule->decrement('available_seats', count($request->seat_numbers));
+            DB::commit();
+            return redirect()->route('bookings.index')->with('success', 'Booking has been created.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Booking failed: ' . $e->getMessage());
+        }
     }
+
 
     /**
      * Display the specified resource.
@@ -151,9 +193,9 @@ class BookingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBookingRequest $request, Booking $booking)
+    public function update(Request $request, Booking $booking)
     {
-        //
+        dd("ok");
     }
 
     /**
@@ -161,6 +203,10 @@ class BookingController extends Controller
      */
     public function destroy(Booking $booking)
     {
-        //
+        if (!$booking) {
+            return redirect()->route('bookings.index')->with('error', 'Booking not found.');
+        }
+        $booking->delete();
+        return redirect()->route('bookings.index')->with('success', 'Booking has been deleted.');
     }
 }

@@ -4,19 +4,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('seats', function (Blueprint $table) {
+        Schema::create('promotions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bus_id')->constrained()->cascadeOnDelete();;
-            $table->string('seat_number');
-            $table->string('seat_type');
-            $table->softDeletes();
+            $table->string('name');
+            $table->string('code');
+            $table->boolean('active')->default(true);
+            $table->integer('discount_percentage')->default(0);
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('seats');
+        Schema::dropIfExists('promotions');
     }
 };

@@ -1,7 +1,9 @@
 import AddBookingModal from '@/Components/bookings/AddBookingModal.jsx';
+import EditBookingModal from '@/Components/bookings/EditBookingModal.jsx';
+import DeleteConfirmation from '@/Components/DeleteConfirmation.jsx';
 import MainBody from '@/Components/MainBody.jsx';
-import PrimaryButton from '@/Components/PrimaryButton.jsx';
 import SearchComponent from '@/Components/SearchComponent.jsx';
+import SecondaryButton from '@/Components/SecondaryButton.jsx';
 import Table from '@/Components/Table.jsx';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
 import {
@@ -14,7 +16,26 @@ import { useState } from 'react';
 
 export default function Index({ bookings, schedules }) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [selectedBus, setSelectedBus] = useState(null);
+    const [selectedBooking, setSelectedBooking] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [selectedBookingId, setSelectedBookingId] = useState(null);
+
+
+    function handleEdit(id) {
+        console.log('bookings ', bookings);
+        const selectToEdit = bookings.bookings.data.find(
+            (booking) => booking.id === id,
+        );
+        setSelectedBooking(selectToEdit);
+        setIsEditModalOpen(true);
+    }
+    function handleDelete(id) {
+        setSelectedBookingId(id);
+        setIsDeleteOpen(true);
+    }
+
+
     const fcolumns = [
         ...bookings.columns,
         {
@@ -33,7 +54,7 @@ export default function Index({ bookings, schedules }) {
                     </button>
 
                     <button
-                        onClick={() => handleEdit(item.id)}
+                        onClick={() => {}}
                         className="p-1 text-yellow-600 hover:text-yellow-800"
                     >
                         <CreditCardIcon className="h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" />
@@ -59,12 +80,12 @@ export default function Index({ bookings, schedules }) {
             <MainBody>
                 <div className="flex justify-between pb-3">
                     <SearchComponent routeName="bookings.index" />
-                    <PrimaryButton
+                    <SecondaryButton
                         className="ms-2"
                         onClick={() => setIsAddModalOpen(true)}
                     >
                         Add Booking
-                    </PrimaryButton>
+                    </SecondaryButton>
                 </div>
                 <div className="p-1">
                     <Table columns={fcolumns} data={bookings.bookings} />
@@ -73,12 +94,38 @@ export default function Index({ bookings, schedules }) {
                     <AddBookingModal
                         isOpen={isAddModalOpen}
                         onClose={() => setIsAddModalOpen(false)}
-                        routeData={selectedBus}
+                        bookingData={selectedBooking}
                         onSave={(addData) => {
                             console.log(addData);
                             setIsAddModalOpen(false);
                         }}
                         schedules={schedules}
+                    />
+                )}
+
+                {isEditModalOpen && (
+                    <EditBookingModal
+                        isOpen={isEditModalOpen}
+                        onClose={() => setIsEditModalOpen(false)}
+                        bookingData={selectedBooking}
+                        onSave={(addData) => {
+                            console.log(addData);
+                            setIsEditModalOpen(false);
+                        }}
+                        schedules={schedules}
+                    />
+                )}
+
+                {isDeleteOpen && (
+                    <DeleteConfirmation
+                        isOpen={isDeleteOpen}
+                        onClose={() => setIsDeleteOpen(false)}
+                        modelId={selectedBookingId}
+                        modelName="bookings"
+                        modelTitle="Booking"
+                        onConfirm={() => {
+                            console.log('Booking deleted successfully');
+                        }}
                     />
                 )}
             </MainBody>

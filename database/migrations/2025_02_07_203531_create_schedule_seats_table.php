@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('schedule_seats', function (Blueprint $table) {
             $table->id();
             $table->foreignId('schedule_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('seat_id')->constrained();
+            $table->foreignId('seat_id')->constrained()->cascadeOnDelete();
             $table->boolean('is_booked')->default(false);
             $table->softDeletes();
             $table->timestamps();

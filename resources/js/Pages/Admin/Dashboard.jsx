@@ -15,8 +15,6 @@ export default function Dashboard({
     mostRecentBooking,
     userTypeData,
 }) {
-
-
     return (
         <AuthenticatedLayout>
             <MainBody>

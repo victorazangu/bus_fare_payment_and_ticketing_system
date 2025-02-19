@@ -44,7 +44,8 @@ class RouteController extends Controller
                 'id' => $trip->id,
                 'origin' => $trip->origin,
                 'destination' => $trip->destination,
-                'distance' => $trip->distance." KM",
+                'distance' => $trip->distance . " KM",
+                "estimated_travel_time" => $trip->estimated_travel_time . " Hrs",
                 'created_at' => $trip->created_at->toDateTimeString(),
                 'updated_at' => $trip->updated_at->diffForHumans(),
             ];
@@ -56,6 +57,7 @@ class RouteController extends Controller
                 ['key' => 'origin', 'title' => 'Origin'],
                 ['key' => 'destination', 'title' => 'Destination'],
                 ['key' => 'distance', 'title' => 'Distance'],
+                ['key' => 'estimated_travel_time', 'title' => 'Estimated Travel Time'],
                 ['key' => 'created_at', 'title' => 'Created on Date'],
                 ['key' => 'updated_at', 'title' => 'Last Update Date'],
             ],
@@ -111,12 +113,24 @@ class RouteController extends Controller
         $data = $request->validate([
             'origin' => 'required|string|max:255',
             'destination' => 'required|string|max:255',
-            'distance' => 'required|numeric',
+            'distance' => 'required|string',
             'estimated_travel_time' => 'required|string',
         ]);
+        $data['distance'] = $this->sanitizeDistance($data['distance']);
+        $data['estimated_travel_time'] = $this->sanitizeTravelTime($data['estimated_travel_time']);
         $route->update($data);
         return redirect()->route('routes.index')->with('success', 'Route updated successfully.');
     }
+
+    protected function sanitizeDistance($distance)
+    {
+        return floatval(preg_replace('/[^0-9.]/', '', $distance));
+    }
+    protected function sanitizeTravelTime($travelTime)
+    {
+        return floatval(preg_replace('/[^0-9.]/', '', $travelTime));
+    }
+
 
     /**
      * Remove the specified resource from storage.

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payment_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('booking_id')->constrained()->cascadeOnDelete();
-            $table->string('transaction_id'); // Payment gateway transaction ID
+            $table->string('transaction_id');
             $table->decimal('amount', 8, 2);
             $table->string('payment_method');
             $table->string('status');

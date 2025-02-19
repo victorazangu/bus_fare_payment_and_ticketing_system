@@ -2,8 +2,8 @@ import UserCard from '@/Components/cards/UserCard.jsx';
 import DeleteConfirmation from '@/Components/DeleteConfirmation.jsx';
 import MainBody from '@/Components/MainBody.jsx';
 import Pagination from '@/Components/Pagination.jsx';
-import PrimaryButton from '@/Components/PrimaryButton.jsx';
 import SearchComponent from '@/Components/SearchComponent.jsx';
+import SecondaryButton from '@/Components/SecondaryButton.jsx';
 import AddUserModal from '@/Components/users/AddUserModal.jsx';
 import UpdateUserModal from '@/Components/users/UpdateUserModal.jsx';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
@@ -38,12 +38,12 @@ export default function Index({ passengers }) {
             <MainBody>
                 <div className="flex flex-col justify-between space-y-3 pb-3 md:flex-row md:space-y-0">
                     <SearchComponent routeName="admin.users.index" />
-                    <PrimaryButton
+                    <SecondaryButton
                         className="ms-2"
                         onClick={() => setIsAddModalOpen(true)}
                     >
                         Add User
-                    </PrimaryButton>
+                    </SecondaryButton>
                 </div>
                 <h1 className="mb-4 text-2xl font-bold text-white">Users</h1>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

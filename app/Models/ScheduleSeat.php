@@ -16,13 +16,15 @@ class ScheduleSeat extends Model
         'is_booked',
     ];
 
+    public function seat()
+    {
+        return $this->belongsTo(Seat::class);
+    }
+
     public function schedule()
     {
         return $this->belongsTo(Schedule::class);
     }
 
-    public function seat()
-    {
-        return $this->belongsTo(Seat::class);
-    }
+
 }

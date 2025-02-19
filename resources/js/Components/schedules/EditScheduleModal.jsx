@@ -2,6 +2,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import ModalBody from '@/Components/ModalBody.jsx';
 import PrimaryButton from '@/Components/PrimaryButton';
+import SelectInput from '@/Components/SelectInput.jsx';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
@@ -9,31 +10,34 @@ import { useEffect } from 'react';
 export default function EditScheduleModal({
     isOpen,
     onClose,
-    routeData,
+    scheduleData,
     onSave,
+    buses,
+    routes,
 }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        origin: '',
-        destination: '',
-        distance: '',
-        estimated_travel_time: '',
+    const { data, setData, put, processing, errors, reset } = useForm({
+        bus_id: scheduleData.bus_id,
+        route_id: scheduleData.route_id,
+        departure_time: scheduleData.departure_time,
+        arrival_time: scheduleData.arrival_time,
+        fare: scheduleData.fare,
     });
-
     useEffect(() => {
-        if (routeData) {
+        if (scheduleData) {
             setData({
-                origin: routeData.origin || '',
-                destination: routeData.destination || '',
-                distance: routeData.distance || '',
-                estimated_travel_time: routeData.estimated_travel_time || '',
+                bus_id: scheduleData.bus_id || '',
+                route_id: scheduleData.route_id || '',
+                departure_time: scheduleData.departure_time || '',
+                arrival_time: scheduleData.arrival_time || '',
+                fare: scheduleData.fare || '',
             });
         }
-    }, [routeData]);
+    }, [scheduleData]);
 
     const submit = (e) => {
         e.preventDefault();
 
-        post(route('routes.store'), {
+        put(route('schedules.update', scheduleData.id), {
             onSuccess: () => {
                 onSave(data);
                 onClose();
@@ -46,66 +50,85 @@ export default function EditScheduleModal({
     return (
         <ModalBody>
             <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="origin" value="Edit Schedule" />
-                    <TextInput
-                        id="origin"
-                        name="origin"
-                        value={data.origin}
+                <div className="py-2">
+                    <InputLabel htmlFor="bus_id" value="Select Bus" />
+                    <SelectInput
+                        id="bus_id"
+                        name="bus_id"
+                        value={data.bus_id}
+                        options={buses}
                         className="mt-1 block w-full"
-                        onChange={(e) => setData('origin', e.target.value)}
+                        onChange={(e) => setData('bus_id', e.target.value)}
                         required
                     />
-                    <InputError message={errors.origin} className="mt-2" />
+                    <InputError message={errors.bus_id} className="mt-2" />
                 </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="destination" value="Destination" />
-                    <TextInput
-                        id="destination"
-                        name="destination"
-                        value={data.destination}
+                <div className="py-2">
+                    <InputLabel htmlFor="route_id" value="Select Route" />
+                    <SelectInput
+                        id="route_id"
+                        name="route_id"
+                        value={data.route_id}
+                        options={routes}
                         className="mt-1 block w-full"
-                        onChange={(e) => setData('destination', e.target.value)}
+                        onChange={(e) => setData('route_id', e.target.value)}
                         required
                     />
-                    <InputError message={errors.destination} className="mt-2" />
+                    <InputError message={errors.route_id} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="distance" value="Distance (km)" />
-                    <TextInput
-                        id="distance"
-                        name="distance"
-                        value={data.distance}
-                        type="number"
-                        className="mt-1 block w-full"
-                        onChange={(e) => setData('distance', e.target.value)}
-                        required
-                    />
-                    <InputError message={errors.distance} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
+                <div className="py-2">
                     <InputLabel
-                        htmlFor="estimated_travel_time"
-                        value="Estimated Travel Time (hrs)"
+                        htmlFor="departure_time"
+                        value="Departure Time"
                     />
                     <TextInput
-                        id="estimated_travel_time"
-                        name="estimated_travel_time"
-                        value={data.estimated_travel_time}
+                        id="departure_time"
+                        name="departure_time"
                         type="time"
+                        value={data.departure_time}
                         className="mt-1 block w-full"
                         onChange={(e) =>
-                            setData('estimated_travel_time', e.target.value)
+                            setData('departure_time', e.target.value)
                         }
                         required
                     />
                     <InputError
-                        message={errors.estimated_travel_time}
+                        message={errors.departure_time}
                         className="mt-2"
                     />
+                </div>
+
+                <div className="py-2">
+                    <InputLabel htmlFor="arrival_time" value="Arrival Time" />
+                    <TextInput
+                        id="arrival_time"
+                        name="arrival_time"
+                        type="time"
+                        value={data.arrival_time}
+                        className="mt-1 block w-full"
+                        onChange={(e) =>
+                            setData('arrival_time', e.target.value)
+                        }
+                        required
+                    />
+                    <InputError
+                        message={errors.arrival_time}
+                        className="mt-2"
+                    />
+                </div>
+                <div className="mt-4">
+                    <InputLabel htmlFor="fare" value="Fare" />
+                    <TextInput
+                        id="fare"
+                        name="fare"
+                        value={data.fare}
+                        type="text"
+                        className="mt-1 block w-full"
+                        onChange={(e) => setData('fare', e.target.value)}
+                        required
+                    />
+                    <InputError message={errors.fare} className="mt-2" />
                 </div>
 
                 <div className="mt-4 flex items-center justify-end space-x-3">
@@ -121,7 +144,7 @@ export default function EditScheduleModal({
                         className="ms-4"
                         disabled={processing}
                     >
-                        Add Route
+                        <span className="p-1.5">Update Schedule</span>
                     </PrimaryButton>
                 </div>
             </form>

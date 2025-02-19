@@ -9,18 +9,20 @@ import { useForm } from '@inertiajs/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-export default function AddBookingModal({
+export default function EditBookingModal({
     isOpen,
     onClose,
     bookingData,
     onSave,
     schedules,
 }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        schedule_id: '',
-        seat_numbers: [],
-        booking_date: '',
-        promotion_id: '',
+    console.log('bookingData ', bookingData);
+    const { data, setData, put, processing, errors, reset } = useForm({
+        schedule_id: bookingData.schedule_id,
+        seat_numbers:
+            bookingData.seat_numbers === '' ? [] : bookingData.seat_numbers,
+        booking_date: bookingData.booking_date,
+        promotion_id: bookingData.promotion_id,
     });
     const [availableSeats, setAvailableSeats] = useState([]);
 
@@ -46,11 +48,10 @@ export default function AddBookingModal({
             });
         }
     }, [bookingData]);
-
     const submit = (e) => {
         e.preventDefault();
 
-        post(route('bookings.store'), {
+        put(route('buses.update', bookingData.id), {
             onSuccess: () => {
                 onSave(data);
                 onClose();

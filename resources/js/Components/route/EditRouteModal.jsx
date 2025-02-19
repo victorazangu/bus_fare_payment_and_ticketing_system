@@ -74,7 +74,7 @@ export default function EditRouteModal({ isOpen, onClose, routeData, onSave }) {
                         id="distance"
                         name="distance"
                         value={data.distance}
-                        type="number"
+                        type="text"
                         className="mt-1 block w-full"
                         onChange={(e) => setData('distance', e.target.value)}
                         required
@@ -91,7 +91,7 @@ export default function EditRouteModal({ isOpen, onClose, routeData, onSave }) {
                         id="estimated_travel_time"
                         name="estimated_travel_time"
                         value={data.estimated_travel_time}
-                        type="time"
+                        type="text"
                         className="mt-1 block w-full"
                         onChange={(e) =>
                             setData('estimated_travel_time', e.target.value)

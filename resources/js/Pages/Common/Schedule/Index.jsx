@@ -1,9 +1,9 @@
 import DeleteConfirmation from '@/Components/DeleteConfirmation.jsx';
 import MainBody from '@/Components/MainBody.jsx';
-import PrimaryButton from '@/Components/PrimaryButton.jsx';
 import AddScheduleModal from '@/Components/schedules/AddScheduleModal.jsx';
 import EditScheduleModal from '@/Components/schedules/EditScheduleModal.jsx';
 import SearchComponent from '@/Components/SearchComponent.jsx';
+import SecondaryButton from '@/Components/SecondaryButton.jsx';
 import Table from '@/Components/Table.jsx';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline/index.js';
@@ -11,8 +11,6 @@ import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Index({ schedules, columns, buses, routes }) {
-    console.log('buses 1', buses);
-    console.log('routes 1', routes);
     const { user } = usePage().props.auth;
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState(null);
@@ -21,6 +19,11 @@ export default function Index({ schedules, columns, buses, routes }) {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
     function handleEdit(id) {
+        const scheduleToEdit = schedules.data.find(
+            (schedule) => schedule.id === id,
+        );
+        console.log('scheduleToEdit ', scheduleToEdit);
+        setSelectedSchedule(scheduleToEdit);
         setIsEditModalOpen(true);
     }
 
@@ -68,12 +71,12 @@ export default function Index({ schedules, columns, buses, routes }) {
                 <div className="flex justify-between pb-3">
                     <SearchComponent routeName="schedules.index" />
                     {user.user_type === 'admin' && (
-                        <PrimaryButton
+                        <SecondaryButton
                             className="ms-2"
                             onClick={() => setIsAddModalOpen(true)}
                         >
                             Add Schedule
-                        </PrimaryButton>
+                        </SecondaryButton>
                     )}
                 </div>
                 <div className="p-1">
@@ -97,7 +100,9 @@ export default function Index({ schedules, columns, buses, routes }) {
                     <EditScheduleModal
                         isOpen={isEditModalOpen}
                         onClose={() => setIsEditModalOpen(false)}
-                        routeData={selectedSchedule}
+                        scheduleData={selectedSchedule}
+                        buses={buses}
+                        routes={routes}
                         onSave={(updatedData) => {
                             console.log(updatedData);
                             setIsEditModalOpen(false);

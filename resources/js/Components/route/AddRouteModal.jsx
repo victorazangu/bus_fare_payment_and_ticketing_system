@@ -90,7 +90,7 @@ export default function AddRouteModal({ isOpen, onClose, routeData, onSave }) {
                         id="estimated_travel_time"
                         name="estimated_travel_time"
                         value={data.estimated_travel_time}
-                        type="time"
+                        type="number"
                         className="mt-1 block w-full"
                         onChange={(e) =>
                             setData('estimated_travel_time', e.target.value)

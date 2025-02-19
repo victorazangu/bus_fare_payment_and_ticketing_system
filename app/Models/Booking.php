@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
-    /** @use HasFactory<\Database\Factories\BookingFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -18,7 +17,11 @@ class Booking extends Model
         'qr_code',
         'payment_status',
         'total_fare',
-        'promotion_id',
+    ];
+
+    protected $casts = [
+        'booking_date' => 'date',
+        'seat_numbers' => 'array',
     ];
 
     public function user()
@@ -41,9 +44,25 @@ class Booking extends Model
         return $this->hasMany(Cancellation::class);
     }
 
+    public function seats()
+    {
+        $booking = $this->fresh();
 
-    protected $casts = [
-        'booking_date' => 'date',
-    ];
+        if (empty($booking->seat_numbers)) {
+            return collect([]);
+        }
+        $seatIds = is_string($booking->seat_numbers)
+            ? json_decode($booking->seat_numbers, true)
+            : $booking->seat_numbers;
 
+        if (empty($seatIds)) {
+            return collect([]);
+        }
+
+        return Seat::whereIn('id', $seatIds)->get();
+    }
+    public function getFormattedSeatNumbersAttribute()
+    {
+        return $this->seats()->pluck('seat_number')->join(', ');
+    }
 }

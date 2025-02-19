@@ -7,6 +7,7 @@ use App\Http\Requests\StorePaymentTransactionRequest;
 use App\Http\Requests\UpdatePaymentTransactionRequest;
 use App\Models\Booking;
 use App\Models\PaymentTransaction;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -90,10 +91,42 @@ class PaymentTransactionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePaymentTransactionRequest $request)
+    public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'transaction_id' => 'required',
+            'booking_id' => 'required',
+            'amount' => 'required|numeric',
+            'payment_method' => 'required',
+            'status' => 'required',
+        ]);
+        $booking = Booking::findOrFail($data['booking_id']);
+        $paymentdate = Carbon::now();
+        $data['payment_date'] = $paymentdate->toDateString();
+        if ($data['amount'] == $booking->total_fare) {
+            $booking->payment_status = 'paid';
+            $booking->total_fare = $booking->total_fare - $data['amount'];
+            $booking->save();
+            PaymentTransaction::create($data);
+            return redirect()->route('payments.index')->with('success', 'Payment transaction completed successfully.');
+        } elseif ($data['amount'] < $booking->total_fare) {
+            $booking->payment_status = 'partial';
+            $booking->total_fare = $booking->total_fare - $data['amount'];
+            $booking->save();
+            PaymentTransaction::create($data);
+
+            $difference = $booking->total_fare - $data['amount'];
+            return redirect()->route('payments.index')->with('warning', 'Payment is less than the booking amount by ' . $difference . '. The status is partially paid.');
+        } else {
+            $booking->payment_status = 'overpaid';
+            $booking->total_fare = $data['amount'] - $booking->total_fare;
+            $booking->save();
+            PaymentTransaction::create($data);
+            $difference = $booking->total_fare - $data['amount'];
+            return redirect()->route('payments.index')->with('info', 'Payment is greater than the booking amount by ' . $difference . '. The status is overpaid.');
+        }
     }
+
 
     /**
      * Display the specified resource.

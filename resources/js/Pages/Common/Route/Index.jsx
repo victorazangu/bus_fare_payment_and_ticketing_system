@@ -1,10 +1,10 @@
 import MainBody from '@/Components/MainBody.jsx';
 import ModalBody from '@/Components/ModalBody.jsx';
-import PrimaryButton from '@/Components/PrimaryButton.jsx';
 import AddRouteModal from '@/Components/route/AddRouteModal.jsx';
 import DeleteRouteConfirmation from '@/Components/route/DeleteRouteConfirmation.jsx';
 import EditRouteModal from '@/Components/route/EditRouteModal.jsx';
 import SearchComponent from '@/Components/SearchComponent.jsx';
+import SecondaryButton from '@/Components/SecondaryButton.jsx';
 import Table from '@/Components/Table.jsx';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
 import {
@@ -29,14 +29,16 @@ export default function Index({ routes }) {
     }
 
     function handleEdit(id) {
-        // const routeToEdit = routes.routes.find((route) => route.id === id);
-        // setSelectedRoute(routeToEdit);
+        console.log('routes ', routes);
+        const routeToEdit = routes.routes.data.find((route) => route.id === id);
+        setSelectedRoute(routeToEdit);
         setIsEditModalOpen(true);
     }
 
     const user = usePage().props.auth.user;
 
-    // const { flash } = usePage().props;
+    const { flash } = usePage().props;
+    console.log('flash ', flash);
 
     function handleDelete(id) {
         setSelectedRouteId(id);
@@ -86,20 +88,18 @@ export default function Index({ routes }) {
                 <div className="flex justify-between pb-3">
                     <SearchComponent routeName="routes.index" />
                     {user.user_type === 'admin' && (
-                        <PrimaryButton
+                        <SecondaryButton
                             className="ms-2"
                             onClick={() => setIsAddModalOpen(true)}
                         >
                             Add Route
-                        </PrimaryButton>
+                        </SecondaryButton>
                     )}
                 </div>
 
                 <div className="p-1">
                     <Table columns={columns} data={routes.routes} />
                 </div>
-
-                {/* View Modal */}
                 {isViewModalOpen && (
                     <ModalBody showCloseIcon={true}>
                         <button
@@ -111,8 +111,6 @@ export default function Index({ routes }) {
                         </button>
                     </ModalBody>
                 )}
-
-                {/* Delete Confirmation Modal */}
                 {isDeleteOpen && (
                     <DeleteRouteConfirmation
                         isOpen={isDeleteOpen}

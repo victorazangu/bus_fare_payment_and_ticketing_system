@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateScheduleRequest;
 use App\Models\Bus;
 use App\Models\Route;
 use App\Models\Schedule;
+use App\Models\ScheduleSeat;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -47,13 +48,15 @@ class ScheduleController extends Controller
                 'id' => $schedule->id,
                 'registration_number' => $schedule->bus->registration_number,
                 'bus_model' => $schedule->bus->model,
+                "bus_id" => $schedule->bus->id,
+                'route_id' => $schedule->route->id,
                 'capacity' => $schedule->bus->capacity,
                 'origin' => $schedule->route->origin,
                 'destination' => $schedule->route->destination,
                 'distance' => $schedule->route->distance . " KM",
                 'departure_time' => $schedule->departure_time->format('H:i'),
                 'arrival_time' => $schedule->arrival_time->format('H:i'),
-                'fare' => "KSH ".$schedule->fare,
+                'fare' => "KSH " . $schedule->fare,
             ];
         });
 
@@ -93,7 +96,7 @@ class ScheduleController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -110,7 +113,18 @@ class ScheduleController extends Controller
         ]);
         $availableSeats = Bus::where('id', $data['bus_id'])->value('capacity');
         $data['available_seats'] = $availableSeats;
-        $route = Schedule::create($data);
+
+        $schedule = Schedule::create($data);
+        $bus = Bus::find($data['bus_id']);
+        $seats = $bus->seats;
+        foreach ($seats as $seat) {
+            ScheduleSeat::create([
+                'schedule_id' => $schedule->id,
+                'seat_id' => $seat->id,
+                'is_booked' => false,
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Schedule created successfully.');
     }
 
@@ -133,10 +147,37 @@ class ScheduleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateScheduleRequest $request, Schedule $schedule)
+    public function update(Request $request, Schedule $schedule)
     {
-        //
+        $data = $request->validate([
+            'bus_id' => 'required|numeric|exists:buses,id',
+            'route_id' => 'required|numeric|exists:routes,id',
+            'departure_time' => 'required|date_format:H:i',
+            'arrival_time' => 'required|date_format:H:i',
+            'fare' => 'required|string',
+        ]);
+        $fareString = $data['fare'];
+        $fare = $this->sanitizeFare($fareString);
+        $data['fare'] = $fare;
+        $schedule->update($data);
+        $bus = Bus::find($data['bus_id']);
+        $seats = $bus->seats;
+        foreach ($seats as $seat) {
+            ScheduleSeat::updateOrCreate(
+                ['schedule_id' => $schedule->id, 'seat_id' => $seat->id],
+                ['is_booked' => false]
+            );
+        }
+
+        return redirect()->route('schedules.index')->with('success', 'Schedule updated successfully.');
     }
+
+    private function sanitizeFare($fareString)
+    {
+        $numericFare = preg_replace('/\D/', '', $fareString);
+        return (int)$numericFare;
+    }
+
 
     /**
      * Remove the specified resource from storage.
