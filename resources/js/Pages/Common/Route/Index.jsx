@@ -1,5 +1,5 @@
 import MainBody from '@/Components/MainBody.jsx';
-import ModalBody from '@/Components/ModalBody.jsx';
+import MapComponent from '@/Components/maps/MapComponent.jsx';
 import AddRouteModal from '@/Components/route/AddRouteModal.jsx';
 import DeleteRouteConfirmation from '@/Components/route/DeleteRouteConfirmation.jsx';
 import EditRouteModal from '@/Components/route/EditRouteModal.jsx';
@@ -11,7 +11,6 @@ import {
     EyeIcon,
     PencilIcon,
     TrashIcon,
-    XMarkIcon,
 } from '@heroicons/react/24/outline/index.js';
 import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -22,9 +21,14 @@ export default function Index({ routes }) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedRoute, setSelectedRoute] = useState(null);
+    const [origin, setOrigin] = useState('');
+    const [destination, setDestination] = useState('');
     const [selectedRouteId, setSelectedRouteId] = useState(null);
 
     function handleView(id) {
+        const getSelectedRoute = routes.routes.data.find((route) => route.id === id);
+        setOrigin(getSelectedRoute.origin);
+        setDestination(getSelectedRoute.destination);
         setIsViewModalOpen(true);
     }
 
@@ -101,15 +105,21 @@ export default function Index({ routes }) {
                     <Table columns={columns} data={routes.routes} />
                 </div>
                 {isViewModalOpen && (
-                    <ModalBody showCloseIcon={true}>
-                        <button
-                            onClick={() => setIsViewModalOpen(false)}
-                            className="p-1 text-red-600 hover:text-red-800"
-                        >
-                            <img src="map.png" alt="Map" />
-                            <XMarkIcon className="m-3 h-5 w-5 text-end text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" />
-                        </button>
-                    </ModalBody>
+                    // <ModalBody showCloseIcon={true}>
+                    //     <button
+                    //         onClick={() => setIsViewModalOpen(false)}
+                    //         className="p-1 text-red-600 hover:text-red-800"
+                    //     >
+                    //         <img src="map.png" alt="Map" />
+                    //         <XMarkIcon className="m-3 h-5 w-5 text-end text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" />
+                    //     </button>
+                    // </ModalBody>
+                    <MapComponent
+                        origin={origin}
+                        destination={destination}
+                        isViewModalOpen={isViewModalOpen}
+                        setIsViewModalOpen={setIsViewModalOpen}
+                    />
                 )}
                 {isDeleteOpen && (
                     <DeleteRouteConfirmation

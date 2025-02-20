@@ -13,6 +13,6 @@ class BusDriverSeeder extends Seeder
      */
     public function run(): void
     {
-        BusDriver::factory(5)->create();
+        BusDriver::factory(12)->create();
     }
 }

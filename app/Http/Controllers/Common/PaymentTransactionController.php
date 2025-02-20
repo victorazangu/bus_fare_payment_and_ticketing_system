@@ -96,7 +96,7 @@ class PaymentTransactionController extends Controller
         $data = $request->validate([
             'transaction_id' => 'required',
             'booking_id' => 'required',
-            'amount' => 'required|numeric',
+            'amount' => 'required|numeric:max:10000',
             'payment_method' => 'required',
             'status' => 'required',
         ]);
@@ -159,4 +159,20 @@ class PaymentTransactionController extends Controller
     {
         //
     }
+
+    public function autoPayment(Request $request)
+    {
+        if ($request->payment_method === 'mpesa') {
+            sleep(3);
+        } else if ($request->payment_method === 'cash') {
+            sleep(1);
+        }
+
+        if ($request->payment_method === 'cash') {
+            return redirect()->route('payments.index')->with('success', 'Payment transaction completed successfully.');
+        } else if ($request->payment_method === 'mpesa') {
+            return redirect()->route('payments.index')->with('success', 'Payment transaction initiated. Enter MPesa pin successfully.');
+        }
+    }
+
 }

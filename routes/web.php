@@ -44,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/buses', BusController::class)->names('buses');
     Route::resource('/bookings', BookingController::class)->names('bookings');
     Route::resource('/payments', PaymentTransactionController::class)->names('payments');
+    Route::post('/payments/auto', [PaymentTransactionController::class, "autoPayment"])->name("payments.auto");
     Route::resource('/cancellations', CancellationController::class)->names('cancellations');
     Route::get('/available-seats', [BookingController::class, 'getAvailableSeats'])->name('available-seats');
 

@@ -1,7 +1,9 @@
 import AddBookingModal from '@/Components/bookings/AddBookingModal.jsx';
 import EditBookingModal from '@/Components/bookings/EditBookingModal.jsx';
+import CancelConfirmation from '@/Components/CancelConfirmation.jsx';
 import DeleteConfirmation from '@/Components/DeleteConfirmation.jsx';
 import MainBody from '@/Components/MainBody.jsx';
+import PaymentModal from '@/Components/PaymentModal.jsx';
 import SearchComponent from '@/Components/SearchComponent.jsx';
 import SecondaryButton from '@/Components/SecondaryButton.jsx';
 import Table from '@/Components/Table.jsx';
@@ -14,13 +16,14 @@ import {
 } from '@heroicons/react/24/outline/index.js';
 import { useState } from 'react';
 
-export default function Index({ bookings, schedules }) {
+export default function Index({ bookings, schedules, bookingsOptions }) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
     const [selectedBookingId, setSelectedBookingId] = useState(null);
-
+    const [isCancelOpen, setIsCancelOpen] = useState(false);
 
     function handleEdit(id) {
         console.log('bookings ', bookings);
@@ -30,11 +33,21 @@ export default function Index({ bookings, schedules }) {
         setSelectedBooking(selectToEdit);
         setIsEditModalOpen(true);
     }
+
     function handleDelete(id) {
         setSelectedBookingId(id);
         setIsDeleteOpen(true);
     }
 
+    function handlePayment(id) {
+        setSelectedBookingId(id);
+        setIsPaymentOpen(true);
+    }
+
+    function handleCancel(id) {
+        setSelectedBookingId(id);
+        setIsCancelOpen(true);
+    }
 
     const fcolumns = [
         ...bookings.columns,
@@ -48,19 +61,16 @@ export default function Index({ bookings, schedules }) {
                         className="relative p-1 text-yellow-600 hover:text-yellow-800"
                     >
                         <PencilIcon className="h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" />
-                        {/*<span className="absolute bottom-full left-1/2 mb-2 hidden -translate-x-1/2 transform rounded-md bg-gray-800 px-2 py-1 text-sm text-yellow-600 shadow-lg group-hover:block">*/}
-                        {/*    Edit Booking*/}
-                        {/*</span>*/}
                     </button>
 
                     <button
-                        onClick={() => {}}
+                        onClick={() => handlePayment(item.id)}
                         className="p-1 text-yellow-600 hover:text-yellow-800"
                     >
                         <CreditCardIcon className="h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" />
                     </button>
                     <button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => handleCancel(item.id)}
                         className="p-1 text-red-600 hover:text-red-800"
                     >
                         <XMarkIcon className="h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" />
@@ -125,6 +135,33 @@ export default function Index({ bookings, schedules }) {
                         modelTitle="Booking"
                         onConfirm={() => {
                             console.log('Booking deleted successfully');
+                        }}
+                    />
+                )}
+
+                {isPaymentOpen && (
+                    <PaymentModal
+                        isOpen={isPaymentOpen}
+                        onClose={() => setIsPaymentOpen(false)}
+                        modelId={selectedBookingId}
+                        modelName="payments"
+                        modelTitle="Payment"
+                        bookings={bookingsOptions}
+                        onConfirm={() => {
+                            console.log('Payment processed successfully');
+                        }}
+                    />
+                )}
+
+                {isCancelOpen && (
+                    <CancelConfirmation
+                        isOpen={isCancelOpen}
+                        onClose={() => setIsCancelOpen(false)}
+                        modelId={selectedBookingId}
+                        modelName="cancellations"
+                        modelTitle="Booking"
+                        onConfirm={() => {
+                            console.log('Booking is canceled successfully');
                         }}
                     />
                 )}

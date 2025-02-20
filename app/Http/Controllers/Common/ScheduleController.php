@@ -57,8 +57,11 @@ class ScheduleController extends Controller
                 'departure_time' => $schedule->departure_time->format('H:i'),
                 'arrival_time' => $schedule->arrival_time->format('H:i'),
                 'fare' => "KSH " . $schedule->fare,
+                'frequency' => $schedule->frequency,
+                'travel_day' => $schedule->travel_day,
             ];
         });
+
 
         $buses = Bus::get()->map(function ($bus) {
             return [
@@ -87,6 +90,8 @@ class ScheduleController extends Controller
                 ['key' => 'departure_time', 'title' => 'Departure Time'],
                 ['key' => 'arrival_time', 'title' => 'Estimated Arrival Time'],
                 ['key' => 'fare', 'title' => 'Fare'],
+                ['key' => 'frequency', 'title' => 'Schedule Frequency'],
+                ['key' => 'travel_day', 'title' => 'Travel Day'],
             ],
         ]);
     }
@@ -110,10 +115,11 @@ class ScheduleController extends Controller
             'departure_time' => 'required|date_format:H:i',
             'arrival_time' => 'required|date_format:H:i',
             'fare' => 'required|numeric',
+            'frequency' => 'nullable|in:daily,weekly,monthly,yearly',
+            'travel_day' => 'nullable|string',
         ]);
         $availableSeats = Bus::where('id', $data['bus_id'])->value('capacity');
         $data['available_seats'] = $availableSeats;
-
         $schedule = Schedule::create($data);
         $bus = Bus::find($data['bus_id']);
         $seats = $bus->seats;
@@ -155,6 +161,8 @@ class ScheduleController extends Controller
             'departure_time' => 'required|date_format:H:i',
             'arrival_time' => 'required|date_format:H:i',
             'fare' => 'required|string',
+            'frequency' => 'nullable|in:daily,weekly,monthly,yearly',
+            'travel_day' => 'nullable|string',
         ]);
         $fareString = $data['fare'];
         $fare = $this->sanitizeFare($fareString);

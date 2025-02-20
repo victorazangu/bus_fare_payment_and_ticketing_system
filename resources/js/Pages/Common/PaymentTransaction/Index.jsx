@@ -28,7 +28,7 @@ export default function Index({ transactions, columns, bookings }) {
                     <AddPaymentModal
                         isOpen={isAddModalOpen}
                         onClose={() => setIsAddModalOpen(false)}
-                        routeData={selectedPayment}
+                        paymentData={selectedPayment}
                         onSave={(addData) => {
                             console.log(addData);
                             setIsAddModalOpen(false);

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Common;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCancellationRequest;
 use App\Http\Requests\UpdateCancellationRequest;
+use App\Models\Booking;
 use App\Models\Cancellation;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -89,9 +91,24 @@ class CancellationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCancellationRequest $request)
+    public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'booking_id' => 'required|exists:bookings,id',
+            'reason' => 'required|string',
+        ]);
+
+        $booking = Booking::find($data['booking_id']);
+        $booking->cancellations()->create([
+            'reason' => $data['reason'],
+            'cancellation_date' => Carbon::now(),
+            'refund_amount' => $booking->total_fare,
+            "status" => "cancelled",
+        ]);
+
+        $booking->update(['status' => "cancelled"]);
+        return redirect()->back()->with('success', 'Cancellation Created Successfully');
+
     }
 
     /**

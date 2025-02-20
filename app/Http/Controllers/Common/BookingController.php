@@ -31,12 +31,20 @@ class BookingController extends Controller
                 "label" => $schedule->route->origin . " to " . $schedule->route->destination . "(" . $schedule->bus->registration_number . ")"
             ];
         });
+        $bookingsOptions = Booking::with(["schedule.bus", "schedule.route"])->get()->transform(function ($booking) {
+            return [
+                'value' => $booking->id,
+                'label' => $booking->schedule->route->origin . ' to ' . $booking->schedule->route->destination
+                    . ' (' . $booking->schedule->bus->registration_number . ')',
+            ];
+        });
 
 
         return Inertia::render('Common/Booking/Index',
             [
                 'bookings' => $bookings,
                 'schedules' => $schedules,
+                'bookingsOptions' => $bookingsOptions,
             ]);
     }
 
@@ -67,6 +75,7 @@ class BookingController extends Controller
     {
         $user = auth()->user();
         $query = Booking::with(['user', 'schedule.route', 'schedule.bus', 'paymentTransaction'])
+            ->where('status', '!=', 'cancelled')
             ->latest();
         if ($user->isAdmin()) {
         } elseif ($user->isDriver()) {
@@ -101,8 +110,10 @@ class BookingController extends Controller
                 'seat_numbers' => $seatNumbers,
                 'booking_date' => $booking->booking_date->toDateString(),
                 'payment_status' => $booking->payment_status,
+                "status" => $booking->status,
                 'total_fare' => "KSH " . $booking->total_fare,
                 'payment_method' => optional($booking->paymentTransaction)->payment_method,
+                'status' => $booking->status,
             ];
         });
 
@@ -116,8 +127,9 @@ class BookingController extends Controller
                 ['key' => 'seat_numbers', 'title' => 'Seat Numbers'],
                 ['key' => 'booking_date', 'title' => 'Booking Date'],
                 ['key' => 'payment_status', 'title' => 'Payment Status'],
+                ['key' => 'status', 'title' => 'Booking Status'],
                 ['key' => 'total_fare', 'title' => 'Total Fare'],
-                ['key' => 'payment_method', 'title' => 'Payment Method'],
+//                ['key' => 'payment_method', 'title' => 'Payment Method'],
             ],
         ];
     }
@@ -157,6 +169,7 @@ class BookingController extends Controller
                 'payment_status' => 'pending',
                 'total_fare' => $totalFare,
                 'qr_code' => $qrCode,
+                'status' => "pending",
             ]);
             foreach ($request->seat_numbers as $seatId) {
                 ScheduleSeat::updateOrCreate(
@@ -195,8 +208,51 @@ class BookingController extends Controller
      */
     public function update(Request $request, Booking $booking)
     {
-        dd("ok");
+        $request->validate([
+            'schedule_id' => 'required|exists:schedules,id',
+            'seat_numbers' => 'required|array',
+            'seat_numbers.*' => 'integer|exists:seats,id',
+            'booking_date' => 'required|date',
+            'promotion_id' => 'nullable|exists:promotions,id',
+            'status' => "nullable|string",
+        ]);
+        $schedule = Schedule::findOrFail($request->schedule_id);
+        $totalFare = $schedule->fare * count($request->seat_numbers);
+        DB::beginTransaction();
+        try {
+            $booking->update([
+                'schedule_id' => $schedule->id,
+                'seat_numbers' => json_encode($request->seat_numbers),
+                'booking_date' => Carbon::parse($request->booking_date),
+                'promotion_id' => $request->promotion_id,
+                'total_fare' => $totalFare,
+                'status' => $request->status
+            ]);
+            $oldSeatNumbers = json_decode($booking->seat_numbers);
+            if ($oldSeatNumbers) {
+                foreach ($oldSeatNumbers as $seatId) {
+                    ScheduleSeat::updateOrCreate(
+                        ['schedule_id' => $schedule->id, 'seat_id' => $seatId],
+                        ['is_booked' => false]
+                    );
+                }
+                $schedule->increment('available_seats', count($oldSeatNumbers));
+            }
+            foreach ($request->seat_numbers as $seatId) {
+                ScheduleSeat::updateOrCreate(
+                    ['schedule_id' => $schedule->id, 'seat_id' => $seatId],
+                    ['is_booked' => true]
+                );
+            }
+            $schedule->decrement('available_seats', count($request->seat_numbers));
+            DB::commit();
+            return redirect()->route('bookings.index')->with('success', 'Booking has been updated.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Booking update failed: ' . $e->getMessage());
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -209,4 +265,6 @@ class BookingController extends Controller
         $booking->delete();
         return redirect()->route('bookings.index')->with('success', 'Booking has been deleted.');
     }
+
+
 }

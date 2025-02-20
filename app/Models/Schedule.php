@@ -17,6 +17,8 @@ class Schedule extends Model
         'arrival_time',
         'fare',
         'available_seats',
+        'frequency',
+        'travel_day'
     ];
 
     public function bus()
@@ -50,4 +52,18 @@ class Schedule extends Model
         "departure_time" => "datetime",
         "arrival_time" => "datetime",
     ];
+
+    public function setTravelDayAttribute($value)
+    {
+        if ($this->frequency == 'weekly') {
+            $days = explode(',', $value);
+            $this->attributes['travel_day'] = implode(',', array_map('strtolower', $days));
+        } elseif ($this->frequency == 'monthly' || $this->frequency == 'yearly') {
+            $this->attributes['travel_day'] = $value;
+        } else if ($this->frequency == 'daily') {
+            $this->attributes['travel_day'] = "Everyday";
+        } else {
+            $this->attributes['travel_day'] = null;
+        }
+    }
 }

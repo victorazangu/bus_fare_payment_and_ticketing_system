@@ -121,6 +121,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Routes
                                     </NavLink>
                                     <NavLink
+                                        href={route('schedules.index')}
+                                        active={route().current('schedules.*')}
+                                    >
+                                        Schedules
+                                    </NavLink>
+                                    <NavLink
                                         href={route('notifications.index')}
                                         active={route().current(
                                             'notifications.index',

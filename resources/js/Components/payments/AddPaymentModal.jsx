@@ -92,7 +92,6 @@ export default function AddPaymentModal({
                         onChange={(e) =>
                             setData('transaction_id', e.target.value)
                         }
-                        required
                     />
                     <InputError
                         message={errors.transaction_id}

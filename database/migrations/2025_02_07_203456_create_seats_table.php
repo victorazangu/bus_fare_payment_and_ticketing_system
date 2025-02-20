@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('bus_id')->constrained()->cascadeOnDelete();;
             $table->string('seat_number');
-            $table->string('seat_type');
+            $table->string('seat_type')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

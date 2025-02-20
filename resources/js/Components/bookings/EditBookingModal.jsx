@@ -20,7 +20,9 @@ export default function EditBookingModal({
     const { data, setData, put, processing, errors, reset } = useForm({
         schedule_id: bookingData.schedule_id,
         seat_numbers:
-            bookingData.seat_numbers === '' ? [] : bookingData.seat_numbers,
+            typeof bookingData.seat_numbers === 'string'
+                ? []
+                : bookingData.seat_numbers,
         booking_date: bookingData.booking_date,
         promotion_id: bookingData.promotion_id,
     });
@@ -51,7 +53,7 @@ export default function EditBookingModal({
     const submit = (e) => {
         e.preventDefault();
 
-        put(route('buses.update', bookingData.id), {
+        put(route('bookings.update', bookingData.id), {
             onSuccess: () => {
                 onSave(data);
                 onClose();
@@ -73,6 +75,7 @@ export default function EditBookingModal({
                         onChange={(e) => {
                             const selectedSchedule = e.target.value;
                             setData('schedule_id', selectedSchedule);
+                            console.log('selectedSchedule ', selectedSchedule);
                             fetchAvailableSeats(selectedSchedule);
                         }}
                         required

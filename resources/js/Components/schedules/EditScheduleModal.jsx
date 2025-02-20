@@ -21,6 +21,8 @@ export default function EditScheduleModal({
         departure_time: scheduleData.departure_time,
         arrival_time: scheduleData.arrival_time,
         fare: scheduleData.fare,
+        frequency: scheduleData.frequency,
+        travel_day: scheduleData.travel_day,
     });
     useEffect(() => {
         if (scheduleData) {
@@ -30,6 +32,8 @@ export default function EditScheduleModal({
                 departure_time: scheduleData.departure_time || '',
                 arrival_time: scheduleData.arrival_time || '',
                 fare: scheduleData.fare || '',
+                frequency: scheduleData.frequency || '',
+                travel_day: scheduleData.travel_day || '',
             });
         }
     }, [scheduleData]);
@@ -44,6 +48,23 @@ export default function EditScheduleModal({
             },
         });
     };
+
+    const frequencies = [
+        { value: 'daily', label: 'Daily' },
+        { value: 'weekly', label: 'Weekly' },
+        { value: 'monthly', label: 'Monthly' },
+        { value: 'yearly', label: 'Yearly' },
+    ];
+
+    const daysOfTheWeek = [
+        { value: 'monday', label: 'Monday' },
+        { value: 'tuesday', label: 'Tuesday' },
+        { value: 'wednesday', label: 'Wednesday' },
+        { value: 'thursday', label: 'Thursday' },
+        { value: 'friday', label: 'Friday' },
+        { value: 'saturday', label: 'Saturday' },
+        { value: 'sunday', label: 'Sunday' },
+    ];
 
     if (!isOpen) return null;
 
@@ -130,6 +151,91 @@ export default function EditScheduleModal({
                     />
                     <InputError message={errors.fare} className="mt-2" />
                 </div>
+                <div className="mt-4">
+                    <InputLabel htmlFor="frequency" value="Select Frequency" />
+                    <SelectInput
+                        id="frequency"
+                        name="frequency"
+                        value={data.frequency}
+                        options={frequencies}
+                        className="mt-1 block w-full"
+                        onChange={(e) => setData('frequency', e.target.value)}
+                        required
+                    />
+                    <InputError message={errors.frequency} className="mt-2" />
+                </div>
+
+                {data.frequency && (
+                    <>
+                        {data.frequency === 'daily' ? (
+                            <></>
+                        ) : (
+                            <div className="mt-4">
+                                <InputLabel
+                                    htmlFor="travel_day"
+                                    value="Select Travel Day"
+                                />
+
+                                {data.frequency === 'weekly' ? (
+                                    <div className="mt-4">
+                                        <InputLabel
+                                            htmlFor="travel_day"
+                                            value="Travel Day"
+                                        />
+                                        <SelectInput
+                                            id="travel_day"
+                                            name="travel_day"
+                                            value={data.travel_day}
+                                            options={daysOfTheWeek}
+                                            className="mt-1 block w-full"
+                                            onChange={(e) =>
+                                                setData(
+                                                    'travel_day',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            required
+                                        />
+                                        <InputError
+                                            message={errors.travel_day}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="mt-4">
+                                        <InputLabel
+                                            htmlFor="travel_day"
+                                            value="Travel Day"
+                                        />
+                                        <TextInput
+                                            id="travel_day"
+                                            name="travel_day"
+                                            value={data.travel_day}
+                                            type="date"
+                                            className="mt-1 block w-full"
+                                            onChange={(e) =>
+                                                setData(
+                                                    'travel_day',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            required
+                                        />
+                                        <InputError
+                                            message={errors.travel_day}
+                                            className="mt-2"
+                                        />
+                                    </div>
+                                )}
+
+                                <InputError
+                                    message={errors.travel_day}
+                                    className="mt-2"
+                                />
+                            </div>
+                        )}
+                    </>
+                )}
 
                 <div className="mt-4 flex items-center justify-end space-x-3">
                     <button

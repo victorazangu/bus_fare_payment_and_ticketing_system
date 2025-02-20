@@ -1,26 +1,36 @@
+import InputError from '@/Components/InputError.jsx';
+import InputLabel from '@/Components/InputLabel.jsx';
+import TextArea from '@/Components/TextArea.jsx';
 import { useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function CancelConfirmation({
-                                               isOpen,
-                                               onClose,
-                                               modelId,
-                                               modelName,
-                                               modelTitle = 'this item',
-                                               onConfirm,
-                                           }) {
+    isOpen,
+    onClose,
+    modelId, // modelId will be the booking_id
+    modelName,
+    modelTitle = 'this item',
+    onConfirm,
+}) {
     const [confirming, setConfirming] = useState(false);
-    const { put: cancel, processing } = useForm(); // Use PUT for canceling (typically for state updates)
+    const { data, setData, post, processing, errors, reset } = useForm({
+        booking_id: '',
+        reason: '',
+    });
+
+    useEffect(() => {
+        if (modelId) {
+            setData('booking_id', modelId);
+        }
+    }, [modelId, setData]);
 
     const submit = (e) => {
         e.preventDefault();
-        if (!confirming) return;
 
-        // Use the route for cancellation instead of deletion
-        cancel(route(`${modelName}.cancel`, modelId), {
+        post(route(`${modelName}.store`), {
             onSuccess: () => {
-                onConfirm();  // Callback after cancellation
-                onClose();    // Close the modal after success
+                onConfirm(data);
+                onClose();
             },
         });
     };
@@ -35,9 +45,9 @@ export default function CancelConfirmation({
 
                     <div className="relative w-full max-w-lg rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
                         <div className="flex items-start">
-                            <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
+                            <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-yellow-900">
                                 <svg
-                                    className="h-6 w-6 text-red-600 dark:text-red-400"
+                                    className="h-6 w-6 text-yellow-600 dark:text-yellow-400"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
@@ -56,9 +66,33 @@ export default function CancelConfirmation({
                                     Cancel {modelTitle}
                                 </h3>
                                 <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                    Are you sure you want to cancel {modelTitle}? This action cannot be undone.
+                                    Are you sure you want to cancel {modelTitle}
+                                    ? This action cannot be undone.
                                 </p>
                             </div>
+                        </div>
+                        <div className="my-2">
+                            <InputLabel
+                                htmlFor="reason"
+                                value="Cancellation Reason"
+                            />
+                            <TextArea
+                                id="reason"
+                                name="reason"
+                                value={data.reason}
+                                rows="4"
+                                cols="50"
+                                className="mt-1 block w-full"
+                                onChange={(e) =>
+                                    setData('reason', e.target.value)
+                                } // Update reason field
+                                required
+                                isFocused={true}
+                            />
+                            <InputError
+                                message={errors.reason}
+                                className="mt-2"
+                            />
                         </div>
 
                         <div className="mt-4 flex items-center">
@@ -87,10 +121,10 @@ export default function CancelConfirmation({
                             </button>
                             <button
                                 type="submit"
-                                className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none"
+                                className="rounded-md bg-yellow-400 px-4 py-2 text-sm font-medium text-black hover:bg-yellow-700 focus:outline-none"
                                 disabled={processing || !confirming}
                             >
-                                {processing ? 'Canceling...' : 'Cancel'}
+                                {processing ? 'Canceling...' : 'Cancel Booking'}
                             </button>
                         </div>
                     </div>
