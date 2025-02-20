@@ -3,7 +3,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 function ImageModalBody({ children, onClose, showCloseIcon = true }) {
     const handleOutsideClick = (e) => {
         if (e.target.classList.contains('fixed')) {
-            onClose(); // Close the modal when clicked outside
+            onClose();
         }
     };
 
