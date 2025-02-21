@@ -1,3 +1,4 @@
+import Alerts from '@/Components/Alerts.jsx';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import NotificationModal from '@/Components/NotificationModal.jsx';
@@ -5,9 +6,10 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { BellIcon } from '@heroicons/react/24/outline';
 import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { ToastContainer } from 'react-toastify';
 
 export default function AuthenticatedLayout({ header, children }) {
-    const { auth } = usePage().props;
+    const { auth, flash } = usePage().props;
     const user = auth.user;
     const notifications = auth.notifications;
     const read_count = auth.read_count;
@@ -86,6 +88,10 @@ export default function AuthenticatedLayout({ header, children }) {
                                     >
                                         Cancellations
                                     </NavLink>
+
+                                    {/*<NavLink href={route('bookings.scanner')}>*/}
+                                    {/*    Scanner Dev*/}
+                                    {/*</NavLink>*/}
                                 </div>
                             )}
 
@@ -323,6 +329,8 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
             </nav>
+            <ToastContainer />
+            <Alerts flash={flash} />
             <main>{children}</main>
             {isModalOpen && (
                 <NotificationModal

@@ -7,6 +7,8 @@ use App\Http\Requests\StoreCancellationRequest;
 use App\Http\Requests\UpdateCancellationRequest;
 use App\Models\Booking;
 use App\Models\Cancellation;
+use App\Models\Notification;
+use App\Notifications\BookingCancellation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -105,10 +107,35 @@ class CancellationController extends Controller
             'refund_amount' => $booking->total_fare,
             "status" => "cancelled",
         ]);
+        $refundAmount = $this->calculateRefundAmount($booking);
 
         $booking->update(['status' => "cancelled"]);
+
+        $booking->user->notify(new BookingCancellation($booking, $refundAmount));
         return redirect()->back()->with('success', 'Cancellation Created Successfully');
 
+    }
+
+    private function calculateRefundAmount($booking)
+    {
+
+        $now = now();
+        $departureTime = $booking->schedule->departure_date . ' ' . $booking->schedule->departure_time;
+        $hoursLeft = $now->diffInHours($departureTime, false);
+
+        if ($hoursLeft > 48) {
+            // Full refund
+            return $booking->amount;
+        } elseif ($hoursLeft > 24) {
+            // 75% refund
+            return $booking->amount * 0.75;
+        } elseif ($hoursLeft > 12) {
+            // 50% refund
+            return $booking->amount * 0.5;
+        } else {
+            // No refund
+            return 0;
+        }
     }
 
     /**

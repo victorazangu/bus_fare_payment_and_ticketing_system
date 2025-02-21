@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\BookingValidatorController;
 use App\Http\Controllers\Common\CancellationController;
 use App\Http\Controllers\Common\BookingController;
 use App\Http\Controllers\Common\BusController;
@@ -59,6 +60,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('driver')->group(function () {
         Route::get('/dashboard', [DriverDashboardController::class, 'index'])->name('driver.dashboard');
     });
+    Route::get('/bookings/qr/scanner', [BookingValidatorController::class, 'showScanner'])->name('bookings.scanner');
+    Route::post('/bookings/qr/svalidate-qr', [BookingValidatorController::class, 'validateQrCode'])->name('bookings.validateQrCode');
+    Route::get('/bookings/qr/{bookingId}/qr-code', [BookingValidatorController::class, 'showQrCode'])->name('bookings.showQrCode');
+
+
+    Route::get('/notification', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+
+
 });
 
 require __DIR__ . '/auth.php';

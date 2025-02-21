@@ -157,6 +157,6 @@ class BusController extends Controller
             return redirect()->route('buses.index')->with('error', 'Bus not found');
         }
         $bus->delete();
-        return redirect()->route('buses.index')->with('success', 'Bus deleted successfully');
+        return redirect()->route('buses.index')->with('error', 'Bus deleted successfully');
     }
 }

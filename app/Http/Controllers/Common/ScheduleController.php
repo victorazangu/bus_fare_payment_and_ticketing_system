@@ -197,7 +197,7 @@ class ScheduleController extends Controller
         }
         try {
             $schedule->delete();
-            return redirect()->back()->with('success', 'Schedule deleted successfully.');
+            return redirect()->back()->with('error', 'Schedule deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete schedule: ' . $e->getMessage());
         }

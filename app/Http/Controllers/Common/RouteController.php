@@ -138,7 +138,7 @@ class RouteController extends Controller
     public function destroy(Route $route)
     {
         $deleted = Route::destroy($route->id);
-        return redirect()->route('routes.index')->with('success', 'Route deleted successfully.');
+        return redirect()->route('routes.index')->with('error', 'Route deleted successfully.');
     }
 
 }

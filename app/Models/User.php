@@ -65,10 +65,10 @@ class User extends Authenticatable
         return $this->hasMany(BusDriver::class);
     }
 
-    public function notifications()
-    {
-        return $this->hasMany(Notification::class);
-    }
+//    public function notifications()
+//    {
+//        return $this->hasMany(Notification::class);
+//    }
 
     public function isAdmin()
     {

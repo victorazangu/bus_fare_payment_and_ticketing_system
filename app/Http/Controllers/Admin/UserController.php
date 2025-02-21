@@ -68,7 +68,7 @@ class UserController extends Controller
         ]);
 
         event(new Registered($user));
-        return redirect()->intended("/admin/users");
+        return redirect()->intended("/admin/users")->with('success', 'User created successfully.');
     }
 
     public function update(Request $request, User $user): RedirectResponse
@@ -84,7 +84,7 @@ class UserController extends Controller
             return redirect()->withErrors("You are not allowed to delete user");
         }
         $user->delete();
-        return redirect()->intended("/admin/users");
+        return redirect()->intended("/admin/users")->with('error', 'User deleted successfully.');
     }
 
 

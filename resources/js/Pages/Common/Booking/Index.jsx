@@ -9,11 +9,14 @@ import SecondaryButton from '@/Components/SecondaryButton.jsx';
 import Table from '@/Components/Table.jsx';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
 import {
+    ArrowDownTrayIcon,
     CreditCardIcon,
     PencilIcon,
     TrashIcon,
-    XMarkIcon,
-} from '@heroicons/react/24/outline/index.js';
+    XMarkIcon
+} from "@heroicons/react/24/outline/index.js";
+
+
 import { useState } from 'react';
 
 export default function Index({ bookings, schedules, bookingsOptions }) {
@@ -80,6 +83,12 @@ export default function Index({ bookings, schedules, bookingsOptions }) {
                         className="p-1 text-red-600 hover:text-red-800"
                     >
                         <TrashIcon className="h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" />
+                    </button>
+                    <button
+                        onClick={() => handleCancel(item.id)}
+                        className="p-1 text-blue-600 hover:text-blue-800"
+                    >
+                        <ArrowDownTrayIcon className="h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" />
                     </button>
                 </div>
             ),

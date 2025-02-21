@@ -6,6 +6,7 @@ use App\Models\Schedule;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Booking>
@@ -24,6 +25,7 @@ class BookingFactory extends Factory
         $seatNumbers = implode(',', $this->faker->randomElements(['1A', '2B', '3C', '4D', '5E'], $this->faker->numberBetween(1, 3)));
         $bookingDate = Carbon::now()->addDays(rand(1, 30));
         $randomDate = Carbon::now()->subDays(rand(0, 365));
+        $booking_code = uniqid('BK-NO-', true) . '-' . strtoupper(Str::random(6));
         return [
             'user_id' => $user->id,
             'schedule_id' => $schedule->id,
@@ -33,7 +35,8 @@ class BookingFactory extends Factory
             'payment_status' => fake()->randomElement(['pending', 'completed', 'failed']),
             'total_fare' => fake()->randomFloat(2, 10, 100),
             'created_at' => $randomDate,
-            'updated_at' => $randomDate->addHours(rand(1, 48))
+            'updated_at' => $randomDate->addHours(rand(1, 48)),
+            "booking_code" => $booking_code,
         ];
     }
 }

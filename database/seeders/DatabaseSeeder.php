@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             PaymentTransactionSeeder::class,
             BusDriverSeeder::class,
             CancellationSeeder::class,
-            NotificationSeeder::class,
         ]);
     }
 }

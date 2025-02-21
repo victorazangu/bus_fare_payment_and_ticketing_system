@@ -15,6 +15,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "propaganistas/laravel-phone": "^5.3",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "tightenco/ziggy": "^2.0",
         "toin0u/geocoder-laravel": "^4.7"
     },

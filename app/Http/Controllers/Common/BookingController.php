@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Models\Booking;
+use App\Models\Notification;
 use App\Models\Route;
 use App\Models\Schedule;
 use App\Models\ScheduleSeat;
 use App\Models\Seat;
+use App\Notifications\BookingConfirmation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -147,30 +149,77 @@ class BookingController extends Controller
      * Store a newly created resource in storage.
      */
 
+//    public function store(Request $request)
+//    {
+//        $request->validate([
+//            'schedule_id' => 'required|exists:schedules,id',
+//            'seat_numbers' => 'required|array',
+//            'seat_numbers.*' => 'required|integer|exists:seats,id',
+//            'booking_date' => 'required|date',
+//            'promotion_id' => 'nullable|exists:promotions,id',
+//        ]);
+//        $schedule = Schedule::findOrFail($request->schedule_id);
+//        $totalFare = $schedule->fare * count($request->seat_numbers);
+//        $qrCode = "";
+//        DB::beginTransaction();
+//        try {
+//            $booking = Booking::create([
+//                'user_id' => auth()->user()->id,
+//                'schedule_id' => $schedule->id,
+//                'seat_numbers' => json_encode($request->seat_numbers),
+//                'booking_date' => Carbon::parse($request->booking_date),
+//                'payment_status' => 'pending',
+//                'total_fare' => $totalFare,
+//                'qr_code' => $qrCode,
+//                'status' => "pending",
+//            ]);
+//            foreach ($request->seat_numbers as $seatId) {
+//                ScheduleSeat::updateOrCreate(
+//                    ['schedule_id' => $schedule->id, 'seat_id' => $seatId],
+//                    ['is_booked' => true]
+//                );
+//            }
+//            $schedule->decrement('available_seats', count($request->seat_numbers));
+//            DB::commit();
+//            return redirect()->route('bookings.index')->with('success', 'Booking has been created.');
+//        } catch (\Exception $e) {
+//            DB::rollBack();
+//            return back()->with('error', 'Booking failed: ' . $e->getMessage());
+//        }
+//    }
+
     public function store(Request $request)
     {
+        $now = Carbon::now('Africa/Nairobi');
         $request->validate([
             'schedule_id' => 'required|exists:schedules,id',
             'seat_numbers' => 'required|array',
             'seat_numbers.*' => 'required|integer|exists:seats,id',
-            'booking_date' => 'required|date',
+            'booking_date' => 'required|date|after:' . $now,
             'promotion_id' => 'nullable|exists:promotions,id',
         ]);
+
         $schedule = Schedule::findOrFail($request->schedule_id);
         $totalFare = $schedule->fare * count($request->seat_numbers);
-        $qrCode = Str::random(10);
+        $qrCodeToken = uniqid('BKG-', true) . '-' . auth()->user()->id . "-" . time() . '-' . Str::random(6);
+        $booking_code = 'BK-NO-' . '-' . strtoupper(Str::random(6));
+
         DB::beginTransaction();
         try {
             $booking = Booking::create([
                 'user_id' => auth()->user()->id,
                 'schedule_id' => $schedule->id,
                 'seat_numbers' => json_encode($request->seat_numbers),
-                'booking_date' => Carbon::parse($request->booking_date),
+//                to be gt than today
+                'booking_date' => $request->booking_date,
                 'payment_status' => 'pending',
                 'total_fare' => $totalFare,
-                'qr_code' => $qrCode,
+                'qr_code' => $qrCodeToken,
                 'status' => "pending",
+                'booking_code' => $booking_code,
             ]);
+            $user = auth()->user();
+            $user->notify(new BookingConfirmation($booking,$totalFare));
             foreach ($request->seat_numbers as $seatId) {
                 ScheduleSeat::updateOrCreate(
                     ['schedule_id' => $schedule->id, 'seat_id' => $seatId],
@@ -263,7 +312,7 @@ class BookingController extends Controller
             return redirect()->route('bookings.index')->with('error', 'Booking not found.');
         }
         $booking->delete();
-        return redirect()->route('bookings.index')->with('success', 'Booking has been deleted.');
+        return redirect()->route('bookings.index')->with('error', 'Booking has been deleted.');
     }
 
 

@@ -144,7 +144,7 @@ export default function AddBookingModal({
                         className="ms-4"
                         disabled={processing}
                     >
-                        Add Route
+                        <span className="p-1"> Book A Ticket</span>
                     </PrimaryButton>
                 </div>
             </form>
