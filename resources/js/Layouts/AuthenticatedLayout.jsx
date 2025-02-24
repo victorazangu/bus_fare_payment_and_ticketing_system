@@ -141,6 +141,14 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Notification
                                     </NavLink>
                                     <NavLink
+                                        href={route('cancellations.index')}
+                                        active={route().current(
+                                            'cancellations.*',
+                                        )}
+                                    >
+                                        Cancellations
+                                    </NavLink>
+                                    <NavLink
                                         href={route('payments.index')}
                                         active={route().current(
                                             'payments.index',

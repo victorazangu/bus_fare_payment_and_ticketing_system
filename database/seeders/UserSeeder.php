@@ -28,16 +28,19 @@ class UserSeeder extends Seeder
                 'name' => 'John Victor',
                 'email' => 'admin@example.com',
                 'user_type' => 'admin',
+                'phone' => "254726262033",
             ],
             [
                 'name' => 'Jane Azangu',
                 'email' => 'passenger@example.com',
                 'user_type' => 'passenger',
+                'phone' => "254726262033",
             ],
             [
                 'name' => 'Mary Shemi',
                 'email' => 'driver@example.com',
                 'user_type' => 'driver',
+                'phone' => "254726262033",
             ],
         ];
 
@@ -48,7 +51,6 @@ class UserSeeder extends Seeder
                 array_merge($user, [
                     'email_verified_at' => now(),
                     'password' => Hash::make('password'),
-                    'phone' => fake()->phoneNumber(),
                     'address' => fake()->address(),
                     'remember_token' => Str::random(10),
                     'created_at' => $randomDate(),
@@ -56,7 +58,7 @@ class UserSeeder extends Seeder
                 ])
             );
         }
-        User::factory(7)->create();
+        User::factory(6)->create();
     }
 
 

@@ -82,7 +82,7 @@ class User extends Authenticatable
 
     public function isCustomer()
     {
-        return $this->user_type === 'passanger';
+        return $this->user_type === 'passenger';
     }
 
 }

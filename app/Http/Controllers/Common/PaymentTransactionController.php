@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentTransactionRequest;
 use App\Http\Requests\UpdatePaymentTransactionRequest;
 use App\Models\Booking;
+use App\Models\MpesaSTK;
 use App\Models\PaymentTransaction;
+use App\Notifications\PaymentConfirmation;
 use Carbon\Carbon;
+use Iankumu\Mpesa\Facades\Mpesa;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -160,19 +163,81 @@ class PaymentTransactionController extends Controller
         //
     }
 
+//    public function autoPayment(Request $request)
+//    {
+//        $booking = Booking::with(["schedule.bus"])->findOrFail($request->booking_id);
+//        $user = auth()->user();
+//        $amount = $booking->total_fare;
+//        $phoneNo = $user->phone;
+//        $account_number = "Bus-" . $booking->schedule->bus->registration_number;
+//        if ($request->payment_method === 'mpesa') {
+//            $response = Mpesa::stkpush($phoneNo, $amount, $account_number);
+//            $result = $response->json();
+////            if ($result['ResponseCode'] === 0) {
+//            MpesaSTK::create([
+//                'merchant_request_id' => $result['MerchantRequestID'],
+//                'checkout_request_id' => $result['CheckoutRequestID']
+//            ]);
+//            $paymentTransaction = PaymentTransaction::create(
+//                [
+//                    'booking_id' => $booking->id,
+//                    "transaction_id" => $result['CheckoutRequestID'],
+//                    'amount' => $amount,
+//                    'payment_method' => 'mpesa',
+//                    'status' => 'Paid',
+//                    'payment_date' => Carbon::now('Africa/Nairobi')->toDateString(),
+//                ]
+//            );
+//            $booking->payment_status = 'paid';
+//            $booking->save();
+//            $paymentTransaction->booking->user->notify(new PaymentConfirmation($paymentTransaction));
+//
+//            return redirect()->route('payments.index')->with('success', 'Payment transaction initiated. Enter M Pesa pin');
+////            } else {
+////                return redirect()->route('payments.index')->with('error', $result['ResponseDescription']);
+////            }
+//        } else if ($request->payment_method === 'cash') {
+//            sleep(1);
+//            return redirect()->route('payments.index')->with('success', 'Payment transaction completed successfully.');
+//
+//        }
+//    }
+
     public function autoPayment(Request $request)
     {
-        if ($request->payment_method === 'mpesa') {
-            sleep(3);
-        } else if ($request->payment_method === 'cash') {
-            sleep(1);
-        }
+        $booking = Booking::with(["schedule.bus"])->findOrFail($request->booking_id);
 
-        if ($request->payment_method === 'cash') {
-            return redirect()->route('payments.index')->with('success', 'Payment transaction completed successfully.');
-        } else if ($request->payment_method === 'mpesa') {
-            return redirect()->route('payments.index')->with('success', 'Payment transaction initiated. Enter MPesa pin successfully.');
+//        if ($booking->payment_status == 'paid') {
+//            return redirect()->route('bookings.index')->with('error', 'Payment is already paid.');
+//        }
+        $user = auth()->user();
+        $amount = $booking->total_fare;
+        $phoneNo = $user->phone;
+        $account_number = $booking->booking_code;
+
+        if ($request->payment_method === 'mpesa') {
+            $response = Mpesa::stkpush($phoneNo, $amount, $account_number);
+            $result = $response->json();
+//            if ($result['ResponseCode'] === 0) {
+            MpesaSTK::create([
+                'merchant_request_id' => $result['MerchantRequestID'],
+                'checkout_request_id' => $result['CheckoutRequestID']
+            ]);
+
+            return redirect()->route('bookings.index')->with('success', 'Payment transaction initiated. Enter M Pesa pin');
+//            } else {
+//                return redirect()->route('payments.index')->with('error', $result['ResponseDescription']);
+//            }
         }
+        return redirect()->route('bookings.index')->with('error', 'Invalid payment method.');
     }
+
+
+    function formatPhoneNumber($phone)
+    {
+        $phone = preg_replace('/[^0-9]/', '', $phone);
+        return '254' . substr($phone, -9);
+    }
+
 
 }

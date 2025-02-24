@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('seat_numbers');
             $table->date('booking_date');
             $table->string('qr_code')->nullable();
-            $table->string('status')->default('pending');
+            $table->string('status')->nullable()->default('pending');
 //            $table->foreignId('promotion_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('payment_status')->default('pending');
             $table->string("booking_code");

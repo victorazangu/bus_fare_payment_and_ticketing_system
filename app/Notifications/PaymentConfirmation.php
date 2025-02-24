@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Models\PaymentTransaction;
+use App\Models\Booking;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,12 +13,14 @@ class PaymentConfirmation extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    protected $paymentTransaction;
+
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct(PaymentTransaction $paymentTransaction)
     {
-        //
+        $this->paymentTransaction = $paymentTransaction;
     }
 
     /**
@@ -34,10 +38,23 @@ class PaymentConfirmation extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $payment = $this->paymentTransaction;
+        $booking = $payment->booking;
+
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->subject('Payment Confirmation for Booking #' . $booking->booking_code)
+            ->greeting('Hello ' . $booking->user->name . ',')
+            ->line('Thank you for your payment. Below are the details of your payment and booking:')
+            ->line('Booking Code: ' . $booking->booking_code)
+            ->line('Payment Transaction ID: ' . $payment->transaction_id)
+            ->line('Amount Paid: KES ' . number_format($payment->amount, 2))
+            ->line('Payment Method: ' . ucfirst($payment->payment_method))
+            ->line('Payment Date: ' . $payment->payment_date->format('F j, Y'))
+            ->line('Seats Reserved: ' . $booking->formatted_seat_numbers)
+            ->line('Departure: ' . $booking->schedule->departure_time->format('F j, Y, g:i A'))
+            ->action('View Booking Details', url('/bookings/'))
+            ->line('We appreciate your business and look forward to serving you soon!')
+            ->salutation('Best regards, Your Travel Team');
     }
 
     /**
@@ -48,7 +65,12 @@ class PaymentConfirmation extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            //
+            'payment_transaction_id' => $this->paymentTransaction->transaction_id,
+            'booking_id' => $this->paymentTransaction->booking_id,
+            'amount' => $this->paymentTransaction->amount,
+            'payment_method' => $this->paymentTransaction->payment_method,
+            'status' => $this->paymentTransaction->status,
+            'payment_date' => $this->paymentTransaction->payment_date,
         ];
     }
 }

@@ -19,6 +19,68 @@ class CancellationController extends Controller
      * Display a listing of the resource.
      */
 
+//    public function index(Request $request)
+//    {
+//        $user = auth()->user();
+//        $query = Cancellation::with([
+//            'booking.user',
+//            'booking.schedule.route',
+//            'booking.schedule.bus'
+//        ])->latest();
+//
+//        if ($user->user_type === 'admin') {
+//        } elseif ($user->user_type === 'driver') {
+//            $query->whereHas('booking.schedule.bus.busDrivers', function ($q) use ($user) {
+//                $q->where('user_id', $user->id);
+//            });
+//        } else {
+//            $query->whereHas('booking', function ($q) use ($user) {
+//                $q->where('user_id', $user->id);
+//            });
+//        }
+//        if ($request->has('search')) {
+//            $search = $request->search;
+//            $query->whereHas('booking.user', function ($q) use ($search) {
+//                $q->where('name', 'like', "%{$search}%");
+//            })
+//                ->orWhereHas('booking.schedule.bus', function ($q) use ($search) {
+//                    $q->where('registration_number', 'like', "%{$search}%");
+//                });
+//        }
+//
+//        $cancellations = $query->paginate(10)->withQueryString();
+//        $cancellations->getCollection()->transform(function ($cancellation) {
+//            return [
+//                'id' => $cancellation->id,
+//                'status' => $cancellation->status,
+//                'cancellation_date' => $cancellation->cancellation_date->toDateString(),
+//                'refund_amount' => "KSH " . $cancellation->refund_amount,
+//                'reason' => $cancellation->reason,
+//                'customer_name' => $cancellation->booking->user->name,
+//                'bus_reg_number' => $cancellation->booking->schedule->bus->registration_number,
+//                'origin' => $cancellation->booking->schedule->route->origin,
+//                'destination' => $cancellation->booking->schedule->route->destination,
+//            ];
+//        });
+//
+//        return Inertia::render('Common/Cancellation/Index', [
+//            'cancellations' => $cancellations,
+//            'filters' => [
+//                'search' => $request->search,  // Preserves the search input
+//            ],
+//            'columns' => [
+//                ['key' => 'status', 'title' => 'Status'],
+//                ['key' => 'cancellation_date', 'title' => 'Cancellation Date'],
+//                ['key' => 'refund_amount', 'title' => 'Refund Amount'],
+//                ['key' => 'reason', 'title' => 'Reason'],
+//                ['key' => 'customer_name', 'title' => 'Customer Name'],
+//                ['key' => 'bus_reg_number', 'title' => 'Bus Reg Number'],
+//                ['key' => 'origin', 'title' => 'Origin'],
+//                ['key' => 'destination', 'title' => 'Destination'],
+//            ],
+//        ]);
+//    }
+
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -27,27 +89,29 @@ class CancellationController extends Controller
             'booking.schedule.route',
             'booking.schedule.bus'
         ])->latest();
-
-        if ($user->user_type === 'admin') {
-        } elseif ($user->user_type === 'driver') {
+        if ($user->isAdmin()) {
+        }
+        elseif ($user->isDriver()) {
             $query->whereHas('booking.schedule.bus.busDrivers', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             });
-        } else {
+        }
+        else {
             $query->whereHas('booking', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             });
         }
         if ($request->has('search')) {
             $search = $request->search;
-            $query->whereHas('booking.user', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-            })
-                ->orWhereHas('booking.schedule.bus', function ($q) use ($search) {
-                    $q->where('registration_number', 'like', "%{$search}%");
-                });
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('booking.user', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");  // Search by customer name
+                })
+                    ->orWhereHas('booking.schedule.bus', function ($q) use ($search) {
+                        $q->where('registration_number', 'like', "%{$search}%");  // Search by bus registration number
+                    });
+            });
         }
-
         $cancellations = $query->paginate(10)->withQueryString();
         $cancellations->getCollection()->transform(function ($cancellation) {
             return [
@@ -62,12 +126,8 @@ class CancellationController extends Controller
                 'destination' => $cancellation->booking->schedule->route->destination,
             ];
         });
-
         return Inertia::render('Common/Cancellation/Index', [
             'cancellations' => $cancellations,
-            'filters' => [
-                'search' => $request->search,  // Preserves the search input
-            ],
             'columns' => [
                 ['key' => 'status', 'title' => 'Status'],
                 ['key' => 'cancellation_date', 'title' => 'Cancellation Date'],
@@ -80,6 +140,7 @@ class CancellationController extends Controller
             ],
         ]);
     }
+
 
 
     /**
@@ -115,7 +176,6 @@ class CancellationController extends Controller
         return redirect()->back()->with('success', 'Cancellation Created Successfully');
 
     }
-
     private function calculateRefundAmount($booking)
     {
 

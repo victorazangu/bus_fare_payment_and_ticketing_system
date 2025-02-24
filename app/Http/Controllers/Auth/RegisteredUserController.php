@@ -50,7 +50,7 @@ class RegisteredUserController extends Controller
             'address' => $request->address,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'user_type' => 'admin',
+            'user_type' => 'passenger',
             'image' => $image,
         ]);
 

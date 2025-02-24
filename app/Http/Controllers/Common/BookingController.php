@@ -102,7 +102,6 @@ class BookingController extends Controller
             } catch (\Exception $e) {
                 $seatNumbers = 'Error retrieving seats';
             }
-
             return [
                 'id' => $booking->id,
                 'user_name' => $booking->user->name,
@@ -115,7 +114,6 @@ class BookingController extends Controller
                 "status" => $booking->status,
                 'total_fare' => "KSH " . $booking->total_fare,
                 'payment_method' => optional($booking->paymentTransaction)->payment_method,
-                'status' => $booking->status,
             ];
         });
 
