@@ -22,6 +22,7 @@ return new class extends Migration
 //            $table->foreignId('promotion_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('payment_status')->default('pending');
             $table->string("booking_code");
+            $table->string("qr_code_data")->nullable();
             $table->decimal("total_fare");
             $table->softDeletes();
             $table->timestamps();

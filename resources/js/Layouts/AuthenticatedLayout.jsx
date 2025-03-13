@@ -75,6 +75,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Bookings
                                     </NavLink>
                                     <NavLink
+                                        href={route('scanners.index')}
+                                        active={route().current('scanners.*')}
+                                    >
+                                        Scanner
+                                    </NavLink>
+                                    <NavLink
                                         href={route('payments.index')}
                                         active={route().current('payments.*')}
                                     >
@@ -186,6 +192,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                         active={route().current('routes.*')}
                                     >
                                         Route
+                                    </NavLink>
+                                    <NavLink
+                                        href={route('scanners.index')}
+                                        active={route().current('scanners.*')}
+                                    >
+                                        Scanner
                                     </NavLink>
                                 </div>
                             )}

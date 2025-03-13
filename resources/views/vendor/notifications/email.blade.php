@@ -1,6 +1,6 @@
 <x-mail::message>
     <div style="text-align: center; margin-bottom: 20px;">
-        <img src="{{ asset('storage/images/logo.png') }}" alt="Logo" width="150">
+        <img src="http://127.0.0.1:8000/storage/images/logo.png" alt="Logo" width="150">
     </div>
     @if (! empty($greeting))
         <h1 style="font-size: 24px; color: #333; text-align: start;">{{ $greeting }}</h1>

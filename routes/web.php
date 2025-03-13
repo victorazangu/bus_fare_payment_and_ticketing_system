@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Common\NotificationController;
 use App\Http\Controllers\Common\RouteController;
 use App\Http\Controllers\Driver\DriverDashboardController;
+use App\Http\Controllers\Driver\ScannerController;
 use App\Http\Controllers\Passenger\PassengerDashboardController;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -60,6 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('driver')->group(function () {
         Route::get('/dashboard', [DriverDashboardController::class, 'index'])->name('driver.dashboard');
+        Route::resource('/scanners', ScannerController::class)->names('scanners');
     });
     Route::get('/bookings/qr/scanner', [BookingValidatorController::class, 'showScanner'])->name('bookings.scanner');
     Route::post('/bookings/qr/svalidate-qr', [BookingValidatorController::class, 'validateQrCode'])->name('bookings.validateQrCode');

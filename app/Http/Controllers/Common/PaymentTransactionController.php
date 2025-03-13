@@ -12,6 +12,7 @@ use App\Notifications\PaymentConfirmation;
 use Carbon\Carbon;
 use Iankumu\Mpesa\Facades\Mpesa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class PaymentTransactionController extends Controller
@@ -58,13 +59,20 @@ class PaymentTransactionController extends Controller
                 'destination' => $transaction->booking->schedule->route->destination,
             ];
         });
-        $bookings = Booking::with(["schedule.bus", "schedule.route"])->get()->transform(function ($booking) {
+
+        $bookingsQuery = Booking::with(["schedule.bus", "schedule.route"])
+            ->whereNotIn('payment_status', ['paid', 'cancelled']);
+        if ($user->isCustomer()) {
+            $bookingsQuery->where('user_id', $user->id);
+        }
+        $bookings = $bookingsQuery->get()->transform(function ($booking) {
             return [
                 'value' => $booking->id,
                 'label' => $booking->schedule->route->origin . ' to ' . $booking->schedule->route->destination
                     . ' (' . $booking->schedule->bus->registration_number . ')',
             ];
         });
+
         return Inertia::render('Common/PaymentTransaction/Index', [
             'transactions' => $transactions,
             'bookings' => $bookings,
@@ -110,22 +118,28 @@ class PaymentTransactionController extends Controller
             $booking->payment_status = 'paid';
             $booking->total_fare = $booking->total_fare - $data['amount'];
             $booking->save();
-            PaymentTransaction::create($data);
+            $payment = PaymentTransaction::create($data);
+            $user = $booking->user;
+            $user->notify(new PaymentConfirmation($payment));
             return redirect()->route('payments.index')->with('success', 'Payment transaction completed successfully.');
         } elseif ($data['amount'] < $booking->total_fare) {
             $booking->payment_status = 'partial';
             $booking->total_fare = $booking->total_fare - $data['amount'];
             $booking->save();
-            PaymentTransaction::create($data);
+            $payment = PaymentTransaction::create($data);
 
             $difference = $booking->total_fare - $data['amount'];
+            $user = $booking->user;
+            $user->notify(new PaymentConfirmation($payment));
             return redirect()->route('payments.index')->with('warning', 'Payment is less than the booking amount by ' . $difference . '. The status is partially paid.');
         } else {
             $booking->payment_status = 'overpaid';
             $booking->total_fare = $data['amount'] - $booking->total_fare;
             $booking->save();
-            PaymentTransaction::create($data);
+            $payment = PaymentTransaction::create($data);
             $difference = $booking->total_fare - $data['amount'];
+            $user = $booking->user;
+            $user->notify(new PaymentConfirmation($payment));
             return redirect()->route('payments.index')->with('info', 'Payment is greater than the booking amount by ' . $difference . '. The status is overpaid.');
         }
     }
@@ -163,75 +177,50 @@ class PaymentTransactionController extends Controller
         //
     }
 
-//    public function autoPayment(Request $request)
-//    {
-//        $booking = Booking::with(["schedule.bus"])->findOrFail($request->booking_id);
-//        $user = auth()->user();
-//        $amount = $booking->total_fare;
-//        $phoneNo = $user->phone;
-//        $account_number = "Bus-" . $booking->schedule->bus->registration_number;
-//        if ($request->payment_method === 'mpesa') {
-//            $response = Mpesa::stkpush($phoneNo, $amount, $account_number);
-//            $result = $response->json();
-////            if ($result['ResponseCode'] === 0) {
-//            MpesaSTK::create([
-//                'merchant_request_id' => $result['MerchantRequestID'],
-//                'checkout_request_id' => $result['CheckoutRequestID']
-//            ]);
-//            $paymentTransaction = PaymentTransaction::create(
-//                [
-//                    'booking_id' => $booking->id,
-//                    "transaction_id" => $result['CheckoutRequestID'],
-//                    'amount' => $amount,
-//                    'payment_method' => 'mpesa',
-//                    'status' => 'Paid',
-//                    'payment_date' => Carbon::now('Africa/Nairobi')->toDateString(),
-//                ]
-//            );
-//            $booking->payment_status = 'paid';
-//            $booking->save();
-//            $paymentTransaction->booking->user->notify(new PaymentConfirmation($paymentTransaction));
-//
-//            return redirect()->route('payments.index')->with('success', 'Payment transaction initiated. Enter M Pesa pin');
-////            } else {
-////                return redirect()->route('payments.index')->with('error', $result['ResponseDescription']);
-////            }
-//        } else if ($request->payment_method === 'cash') {
-//            sleep(1);
-//            return redirect()->route('payments.index')->with('success', 'Payment transaction completed successfully.');
-//
-//        }
-//    }
-
     public function autoPayment(Request $request)
     {
         $booking = Booking::with(["schedule.bus"])->findOrFail($request->booking_id);
-
-//        if ($booking->payment_status == 'paid') {
-//            return redirect()->route('bookings.index')->with('error', 'Payment is already paid.');
-//        }
+        if ($booking->payment_status == 'paid') {
+            return redirect()->route('payments.index')->with('error', 'Payment is already paid.');
+        }
         $user = auth()->user();
         $amount = $booking->total_fare;
         $phoneNo = $user->phone;
-        $account_number = $booking->booking_code;
-
+        $account_number = "Bus-" . $booking->schedule->bus->registration_number;
         if ($request->payment_method === 'mpesa') {
             $response = Mpesa::stkpush($phoneNo, $amount, $account_number);
             $result = $response->json();
+            Log::info($result);
 //            if ($result['ResponseCode'] === 0) {
             MpesaSTK::create([
                 'merchant_request_id' => $result['MerchantRequestID'],
                 'checkout_request_id' => $result['CheckoutRequestID']
             ]);
+            $paymentTransaction = PaymentTransaction::create(
+                [
+                    'booking_id' => $booking->id,
+                    "transaction_id" => $result['CheckoutRequestID'],
+                    'amount' => $amount,
+                    'payment_method' => 'mpesa',
+                    'status' => 'Paid',
+                    'payment_date' => Carbon::now('Africa/Nairobi')->toDateString(),
+                ]
+            );
+            $booking->payment_status = 'paid';
+            $booking->save();
+            $user = $booking->user;
+            $user->notify(new PaymentConfirmation($paymentTransaction));
 
             return redirect()->route('bookings.index')->with('success', 'Payment transaction initiated. Enter M Pesa pin');
 //            } else {
 //                return redirect()->route('payments.index')->with('error', $result['ResponseDescription']);
 //            }
-        }
-        return redirect()->route('bookings.index')->with('error', 'Invalid payment method.');
-    }
+        } else if ($request->payment_method === 'cash') {
+            sleep(1);
+            return redirect()->route('payments.index')->with('success', 'Payment transaction completed successfully.');
 
+        }
+    }
 
     function formatPhoneNumber($phone)
     {

@@ -18,12 +18,10 @@ class DriverDashboardController
     {
         $totals = $this->getDriverMetrics();
         $recentTrips = $this->getRecentTrips();
-        $notifications = $this->getNotifications();
         $availableBuses = $this->getAvailableBuses();
         return Inertia::render('Driver/Dashboard', [
             "totals" => $totals,
             "recentTrips" => $recentTrips,
-            "driverNotifications" => $notifications,
             "availableBuses" => $availableBuses,
         ]);
     }
@@ -50,27 +48,6 @@ class DriverDashboardController
         ];
     }
 
-
-    public function getNotifications()
-    {
-        $perPage = 5;
-
-        $notifications = Notification::select('id', 'type', 'message', 'sent_at', 'read_at')
-            ->where('user_id', auth()->id())
-            ->orderBy('sent_at', 'desc')
-            ->limit($perPage)
-            ->get();
-
-        return [
-            'notifications' => $notifications,
-            'columns' => [
-                ['key' => 'type', 'title' => 'Type'],
-                ['key' => 'message', 'title' => 'Message'],
-                ['key' => 'sent_at', 'title' => 'Sent At'],
-                ['key' => 'read_at', 'title' => 'Read At'],
-            ],
-        ];
-    }
 
 
     public function getRecentTrips()

@@ -13,11 +13,13 @@ use App\Models\ScheduleSeat;
 use App\Models\Seat;
 use App\Notifications\BookingConfirmation;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class BookingController extends Controller
 {
@@ -72,21 +74,21 @@ class BookingController extends Controller
         return response()->json($availableSeats);
     }
 
-
-    public function getBookings($request)
+    public function getBookings(Request $request)
     {
         $user = auth()->user();
         $query = Booking::with(['user', 'schedule.route', 'schedule.bus', 'paymentTransaction'])
             ->where('status', '!=', 'cancelled')
             ->latest();
-        if ($user->isAdmin()) {
-        } elseif ($user->isDriver()) {
+
+        if ($user->isDriver()) {
             $query->whereHas('schedule.bus.busDrivers', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             });
         } elseif ($user->isCustomer()) {
             $query->where('user_id', $user->id);
         }
+
         if ($request->has('search')) {
             $search = $request->search;
             $query->whereHas('user', function ($q) use ($search) {
@@ -95,25 +97,25 @@ class BookingController extends Controller
                 $q->where('origin', 'like', "%{$search}%");
             });
         }
+
         $bookings = $query->paginate(10)->withQueryString();
+
         $bookings->getCollection()->transform(function ($booking) {
-            try {
-                $seatNumbers = $booking->getFormattedSeatNumbersAttribute();
-            } catch (\Exception $e) {
-                $seatNumbers = 'Error retrieving seats';
-            }
             return [
                 'id' => $booking->id,
                 'user_name' => $booking->user->name,
                 'registration_number' => $booking->schedule->bus->registration_number,
                 'origin' => $booking->schedule->route->origin,
                 'destination' => $booking->schedule->route->destination,
-                'seat_numbers' => $seatNumbers,
+                'seat_numbers' => $booking->getFormattedSeatNumbersAttribute(),
                 'booking_date' => $booking->booking_date->toDateString(),
+                'departure_time' => $booking->schedule->departure_time->format('h:i A'),
                 'payment_status' => $booking->payment_status,
-                "status" => $booking->status,
+                'status' => $booking->status,
                 'total_fare' => "KSH " . $booking->total_fare,
                 'payment_method' => optional($booking->paymentTransaction)->payment_method,
+                'qr_code_url' => $booking->getQrCodeUrl(),
+                'booking_code' => $booking->booking_code,
             ];
         });
 
@@ -126,14 +128,13 @@ class BookingController extends Controller
                 ['key' => 'destination', 'title' => 'Destination'],
                 ['key' => 'seat_numbers', 'title' => 'Seat Numbers'],
                 ['key' => 'booking_date', 'title' => 'Booking Date'],
+                ['key' => 'departure_time', 'title' => 'Departure Time'],
                 ['key' => 'payment_status', 'title' => 'Payment Status'],
                 ['key' => 'status', 'title' => 'Booking Status'],
                 ['key' => 'total_fare', 'title' => 'Total Fare'],
-//                ['key' => 'payment_method', 'title' => 'Payment Method'],
             ],
         ];
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -147,44 +148,6 @@ class BookingController extends Controller
      * Store a newly created resource in storage.
      */
 
-//    public function store(Request $request)
-//    {
-//        $request->validate([
-//            'schedule_id' => 'required|exists:schedules,id',
-//            'seat_numbers' => 'required|array',
-//            'seat_numbers.*' => 'required|integer|exists:seats,id',
-//            'booking_date' => 'required|date',
-//            'promotion_id' => 'nullable|exists:promotions,id',
-//        ]);
-//        $schedule = Schedule::findOrFail($request->schedule_id);
-//        $totalFare = $schedule->fare * count($request->seat_numbers);
-//        $qrCode = "";
-//        DB::beginTransaction();
-//        try {
-//            $booking = Booking::create([
-//                'user_id' => auth()->user()->id,
-//                'schedule_id' => $schedule->id,
-//                'seat_numbers' => json_encode($request->seat_numbers),
-//                'booking_date' => Carbon::parse($request->booking_date),
-//                'payment_status' => 'pending',
-//                'total_fare' => $totalFare,
-//                'qr_code' => $qrCode,
-//                'status' => "pending",
-//            ]);
-//            foreach ($request->seat_numbers as $seatId) {
-//                ScheduleSeat::updateOrCreate(
-//                    ['schedule_id' => $schedule->id, 'seat_id' => $seatId],
-//                    ['is_booked' => true]
-//                );
-//            }
-//            $schedule->decrement('available_seats', count($request->seat_numbers));
-//            DB::commit();
-//            return redirect()->route('bookings.index')->with('success', 'Booking has been created.');
-//        } catch (\Exception $e) {
-//            DB::rollBack();
-//            return back()->with('error', 'Booking failed: ' . $e->getMessage());
-//        }
-//    }
 
     public function store(Request $request)
     {
@@ -193,31 +156,32 @@ class BookingController extends Controller
             'schedule_id' => 'required|exists:schedules,id',
             'seat_numbers' => 'required|array',
             'seat_numbers.*' => 'required|integer|exists:seats,id',
-            'booking_date' => 'required|date|after:' . $now,
+//            'booking_date' => 'required|date|after:' . $now->subHour(),
             'promotion_id' => 'nullable|exists:promotions,id',
         ]);
 
         $schedule = Schedule::findOrFail($request->schedule_id);
         $totalFare = $schedule->fare * count($request->seat_numbers);
-        $qrCodeToken = uniqid('BKG-', true) . '-' . auth()->user()->id . "-" . time() . '-' . Str::random(6);
-        $booking_code = 'BK-NO-' . '-' . strtoupper(Str::random(6));
+        $qrCodeToken = uniqid('BKG-', true) . '-' . auth()->id() . "-" . time() . '-' . Str::random(6);
+        $booking_code = 'BK-NO-' . strtoupper(Str::random(6));
 
         DB::beginTransaction();
         try {
             $booking = Booking::create([
-                'user_id' => auth()->user()->id,
+                'user_id' => auth()->id(),
                 'schedule_id' => $schedule->id,
                 'seat_numbers' => json_encode($request->seat_numbers),
-//                to be gt than today
                 'booking_date' => $request->booking_date,
                 'payment_status' => 'pending',
                 'total_fare' => $totalFare,
-                'qr_code' => $qrCodeToken,
+                'qr_code' => null,
                 'status' => "pending",
                 'booking_code' => $booking_code,
             ]);
-            $user = auth()->user();
-            $user->notify(new BookingConfirmation($booking,$totalFare));
+            $qrCodePath = $booking->generateQrCodeImage();
+            $booking->update(['qr_code' => $qrCodePath]);
+            auth()->user()->notify(new BookingConfirmation($booking, $totalFare));
+
             foreach ($request->seat_numbers as $seatId) {
                 ScheduleSeat::updateOrCreate(
                     ['schedule_id' => $schedule->id, 'seat_id' => $seatId],
@@ -225,6 +189,7 @@ class BookingController extends Controller
                 );
             }
             $schedule->decrement('available_seats', count($request->seat_numbers));
+
             DB::commit();
             return redirect()->route('bookings.index')->with('success', 'Booking has been created.');
         } catch (\Exception $e) {
@@ -232,7 +197,6 @@ class BookingController extends Controller
             return back()->with('error', 'Booking failed: ' . $e->getMessage());
         }
     }
-
 
     /**
      * Display the specified resource.
@@ -311,6 +275,17 @@ class BookingController extends Controller
         }
         $booking->delete();
         return redirect()->route('bookings.index')->with('error', 'Booking has been deleted.');
+    }
+
+    public function generateQrCodeImage($bookingId)
+    {
+        $booking = Booking::findOrFail($bookingId);
+        $qrCode = QrCode::size(200)->generate(route('bookings.show', $bookingId)); // Replace with the URL you want the QR code to link to
+
+        $fileName = 'booking_' . $booking->id . '_qr.png';
+        Storage::disk('public')->put($fileName, $qrCode);
+
+        return asset('storage/' . $fileName);
     }
 
 

@@ -9,27 +9,22 @@ use App\Notifications\PaymentConfirmation;
 use Carbon\Carbon;
 use Iankumu\Mpesa\Facades\Mpesa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MpesaSTKPUSHController extends Controller
 {
 
-    public $result_code = 1;
-    public $result_desc = 'An error occured';
     public function STKConfirm(Request $request)
     {
         $stk_push_confirm = (new STKPush())->confirm($request);
-        if ($stk_push_confirm) {
-            $this->result_code = 0;
-            $this->result_desc = 'Success';
-
-            $paymentTransaction = PaymentTransaction::with(["booking"])->findOrFail($stk_push_confirm->checkout_request);
-            $booking = $paymentTransaction->booking;
-            $booking->payment_status = 'paid';
-            $booking->save();
-            $paymentTransaction->booking->user->notify(new PaymentConfirmation($paymentTransaction));
-            return redirect()->back()->with("success", $this->result_desc);
-        }
-        return  redirect()->back()->with("error", $this->result_desc);
-
+        $result_code = $stk_push_confirm->failed ? 1 : 0;
+        $result_desc = $stk_push_confirm->failed ? $stk_push_confirm->response : 'Success';
+        Log::info("STK Confirmation result code: " . $result_code);
+        return response()->json([
+            'ResultCode' => $result_code,
+            'ResultDesc' => $result_desc,
+            'CheckoutRequestID' => $stk_push_confirm->checkout_request_id,
+            'Data' => $stk_push_confirm->data
+        ]);
     }
 }

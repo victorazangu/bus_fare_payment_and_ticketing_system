@@ -1,27 +1,4 @@
-// import MainBody from '@/Components/MainBody.jsx';
-// import SearchComponent from '@/Components/SearchComponent.jsx';
-// import Table from '@/Components/Table.jsx';
-// import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
-//
-// export default function Index({ notifications }) {
-//     return (
-//         <AuthenticatedLayout>
-//             <MainBody>
-//                 <div className="flex justify-between pb-3">
-//                     <SearchComponent routeName="notifications.index" />
-//                 </div>
-//                 <div className="p-1">
-//                     <Table
-//                         columns={notifications.columns}
-//                         data={{ data: notifications.notifications }}
-//                     />
-//                 </div>
-//             </MainBody>
-//         </AuthenticatedLayout>
-//     );
-// }
 
-// resources/js/Pages/Notifications/Index.jsx
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import { format } from 'date-fns';
@@ -45,6 +22,14 @@ export default function Index({ auth, notifications }) {
                     icon: 'x-circle',
                     color: 'text-red-500',
                     link: '/cancellations',
+                };
+            case 'payment_confirmation':
+                return {
+                    title: 'Payment confirmed',
+                    message: data.message,
+                    icon: 'x-circle',
+                    color: 'text-yellow-500',
+                    link: '/payments',
                 };
             default:
                 return {

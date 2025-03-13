@@ -54,7 +54,7 @@ class PaymentConfirmation extends Notification implements ShouldQueue
             ->line('Departure: ' . $booking->schedule->departure_time->format('F j, Y, g:i A'))
             ->action('View Booking Details', url('/bookings/'))
             ->line('We appreciate your business and look forward to serving you soon!')
-            ->salutation('Best regards, Your Travel Team');
+            ->salutation('Best regards, Victor Bus Payment Team');
     }
 
     /**
@@ -66,11 +66,8 @@ class PaymentConfirmation extends Notification implements ShouldQueue
     {
         return [
             'payment_transaction_id' => $this->paymentTransaction->transaction_id,
-            'booking_id' => $this->paymentTransaction->booking_id,
-            'amount' => $this->paymentTransaction->amount,
-            'payment_method' => $this->paymentTransaction->payment_method,
-            'status' => $this->paymentTransaction->status,
-            'payment_date' => $this->paymentTransaction->payment_date,
+            'message' => 'Your Payment of KSH ' . $this->paymentTransaction->amount . ' for booking ' . $this->paymentTransaction->booking->booking_code . ' has been confirmed successfully.',
+            'type' => 'payment_confirmation'
         ];
     }
 }

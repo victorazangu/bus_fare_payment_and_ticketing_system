@@ -6,7 +6,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.jsx';
 export default function Dashboard({
     totals,
     recentTrips,
-    driverNotifications,
     availableBuses,
 }) {
     return (
@@ -32,10 +31,6 @@ export default function Dashboard({
                         <h2 className="mb-2 text-lg font-semibold">
                             Notifications
                         </h2>
-                        <Table
-                            columns={driverNotifications.columns}
-                            data={{ data: driverNotifications.notifications }}
-                        />
                     </div>
                     <div className="rounded-lg bg-gray-800 p-4 text-white shadow-md">
                         <h2 className="mb-2 text-lg font-semibold">

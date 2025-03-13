@@ -46,7 +46,7 @@ class HandleInertiaRequests extends Middleware
                     'image' => $request->user()->image,
                 ] : null,
                 'notifications' => $request->user()
-                    ? $request->user()->notifications()->latest()->take(5)->get()
+                    ? $request->user()->notifications()->latest()->get()
                     : [],
                 'read_count' => $request->user()
                     ? $request->user()->unreadNotifications()->count()
